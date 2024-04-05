@@ -597,6 +597,8 @@ UsedLibraryUrn="urn:adsk.eagle:library:42694135"
 UsedLibrary="/home/eduards/Downloads/AD8676ARMZ.lbr"
 UsedLibrary="/home/eduards/Downloads/OPA656NB_250.lbr"
 UsedLibrary="/home/eduards/Downloads/AD8675ARMZ-REEL.lbr"
+UsedLibrary="/home/eduards/EAGLE/archive/libraries/AD9833BRM.lbr"
+UsedLibrary="/home/eduards/EAGLE/archive/libraries/LM339D.lbr"
 
 [Win_1]
 Type="Control Panel"
