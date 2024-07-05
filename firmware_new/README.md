@@ -7,15 +7,22 @@ PC <--> MainController
           |   |
           V    -------------------
          Position controller     |
-                                 V
-                                 Freq sensor
+          |                      V
+          V                     Freq sensor
+         DAC wrapper    
+
 
 
 Freq sensor - init - find frequency in 100Hz range accuracy of 1Hz
               check - find frequency in 2Hz range accuracy of 0.1Hz
 
 
-Position controller - move in discrete steps
+Position controller - move in discrete steps. It has to convert Cortezian (XYZ) position to Azimutal one. 
+                      Piezoeletric discs moves linear but the stage movment is circular. At small angle 
+                      we might say sin(a) ~= a. As movment increase error increase which we need to fix.
+
+
+DAC wrapper - converts XYZ position to command DAC can convert to voltage.
 
 
 Scanner - controls both Freq sensor and position cont. 
