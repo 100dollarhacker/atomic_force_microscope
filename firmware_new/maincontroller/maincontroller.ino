@@ -7,32 +7,67 @@
 RTx* rtx = new RTx();
 
 
+class DAC
+{
+public:
+  void X_left( int16_t steps ){}
+  void X_right( int16_t steps ){}
+    
+  void Y_left( int16_t steps ){}
+  void Y_right( int16_t steps){}
+    
+
+
+};
+
+
 // Should remember where it's located now
 // plus should be able to convert simple XYZ cordinated to angular movment of probe tip.
 class Position
 {
 
 public:
-  Position()  {x=0;y=0;z=0;}
-  void move(uint16_t x,uint16_t y,uint16_t z){Serial.println("Positioner : I like to move it move it!");}
+  Position()  {x_m=0;y_m=0;z_m=0; dac = new DAC();} // probably needs some parameters like width and height of structure that holds the quartz fork probe.
+  void move(int16_t x, int16_t y, int16_t z)
+  {
+    x_m += x;
+    y_m += y;
+    z_m += z;
+    Serial.print("Position x: ");
+    Serial.print(x_m);
+    Serial.print(" y: ");
+    Serial.print(y_m);
+    Serial.print(" z: ");
+    Serial.println(z_m);
+
+    dac->X_left( x_m + z_m );
+    dac->X_right( -x_m + z_m );
+    
+    dac->Y_left( y_m + z_m );
+    dac->Y_right( -y_m + z_m );
+    
+
+  }
 
 private:
    //DAC
-   uint16_t x,y,z;
+   int16_t x_m,y_m,z_m;
+   DAC* dac;
+   
 };
 
 class Scanner
 {
 public:
   Scanner(){position = new Position();};
-  void down(uint16_t steps) {Serial.println("Scanner going Down"); position->move(steps, 0 , 0);};
-  void up(uint16_t steps) {Serial.println("Scanner going Up");position->move(0, steps , 0);};
-  void swing(uint16_t steps) {Serial.println("Scanner Swing");position->move(steps, 0 , 0);position->move(-steps, 0 , 0);}; // actually we need something more tricky here...
+  void down(uint16_t steps) {Serial.println("Scanner going Down"); position->move(0, 0 , -steps);};
+  void up(uint16_t steps) {Serial.println("Scanner going Up");position->move( 0 , 0, steps);};
+  void swing(uint16_t steps) {Serial.println("Scanner Swing");position->move(0, 0 , steps);position->move(0, 0 , -steps);}; // actually we need something more tricky here...
 
 
 private:
   Position* position;
-  // FreqSensir* freqsensor;
+  // FreqSensor* freqs;
 
 };
 Scanner* scanner = new Scanner();
@@ -49,11 +84,9 @@ void loop()
 {
 
   String cmd = rtx->listen();
-
-	delay(100);
+	delay(100); // OTHER WISE LISTEN FAILS
 	int idx;
 	bool boolean;
-	uint16_t uint16;
 
   // Just a silly check to see if Arduino has a pulse
 	if (cmd == "health")
