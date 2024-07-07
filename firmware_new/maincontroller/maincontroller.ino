@@ -1,4 +1,5 @@
 #include "RTx.h"
+#include "DAC_AD5696.h"
 
 //Communication parameters
 #define BAUDRATE 9600//250000   //Serial interfaces communication speed (bps)
@@ -10,13 +11,22 @@ RTx* rtx = new RTx();
 class DAC
 {
 public:
-  void X_left( int16_t steps ){}
-  void X_right( int16_t steps ){}
+  DAC() {ad5696 = new DAC_AD5696();}
+  void X_left( int16_t steps ){ad5696->SetVoltage(X_LEFT_CHANNEL, steps);}
+  void X_right( int16_t steps ){ad5696->SetVoltage(X_RIGHT_CHANNEL, steps);}
     
-  void Y_left( int16_t steps ){}
-  void Y_right( int16_t steps){}
+  void Y_left( int16_t steps ){ad5696->SetVoltage(Y_LEFT_CHANNEL, steps);}
+  void Y_right( int16_t steps){ad5696->SetVoltage(Y_RIGHT_CHANNEL, steps);}
     
+private:
+  DAC_AD5696* ad5696;
 
+  //ES TOdO : get the right numbers
+  const uint16_t X_LEFT_CHANNEL = 1;
+  const uint16_t X_RIGHT_CHANNEL = 2;
+  const uint16_t Y_LEFT_CHANNEL = 4;
+  const uint16_t Y_RIGHT_CHANNEL = 8;
+  
 
 };
 
