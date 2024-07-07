@@ -333,7 +333,10 @@ void DAC_AD5696::SetVoltage(unsigned char channel, int16_t outputVoltage)
 
 	uint16_t value = outputVoltage + (maxValueF/2);
 
-	Serial.println(value);
+  // Serial.print("Channel: ");
+  // Serial.print(channel);
+  // Serial.print("  value: ");
+	// Serial.println(value);
 
 
 	// need to shift it?

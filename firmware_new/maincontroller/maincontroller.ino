@@ -12,19 +12,19 @@ class DAC
 {
 public:
   DAC() {ad5696 = new DAC_AD5696();}
-  void X_left( int16_t steps ){ad5696->SetVoltage(X_LEFT_CHANNEL, steps);}
-  void X_right( int16_t steps ){ad5696->SetVoltage(X_RIGHT_CHANNEL, steps);}
+  void X_left( int16_t posttion ){ad5696->SetVoltage(X_LEFT_CHANNEL, posttion);}
+  void X_right( int16_t posttion ){ad5696->SetVoltage(X_RIGHT_CHANNEL, posttion);}
     
-  void Y_left( int16_t steps ){ad5696->SetVoltage(Y_LEFT_CHANNEL, steps);}
-  void Y_right( int16_t steps){ad5696->SetVoltage(Y_RIGHT_CHANNEL, steps);}
+  void Y_left( int16_t posttion ){ad5696->SetVoltage(Y_LEFT_CHANNEL, posttion);}
+  void Y_right( int16_t posttion){ad5696->SetVoltage(Y_RIGHT_CHANNEL, posttion);}
     
 private:
   DAC_AD5696* ad5696;
 
   //ES TOdO : get the right numbers
   const uint16_t X_LEFT_CHANNEL = 1;
-  const uint16_t X_RIGHT_CHANNEL = 2;
-  const uint16_t Y_LEFT_CHANNEL = 4;
+  const uint16_t Y_LEFT_CHANNEL = 2;
+  const uint16_t X_RIGHT_CHANNEL = 4;
   const uint16_t Y_RIGHT_CHANNEL = 8;
   
 
@@ -70,9 +70,32 @@ class Scanner
 {
 public:
   Scanner(){position = new Position();};
+  void reset(){delete position; position = new Position();}
   void down(uint16_t steps) {Serial.println("Scanner going Down"); position->move(0, 0 , -steps);};
   void up(uint16_t steps) {Serial.println("Scanner going Up");position->move( 0 , 0, steps);};
-  void swing(uint16_t steps) {Serial.println("Scanner Swing");position->move(0, 0 , steps);position->move(0, 0 , -steps);}; // actually we need something more tricky here...
+  void swing(uint16_t steps) {
+    Serial.println("Scanner Swing");
+
+    for (int i = 0 ; i < 10 ; i++)
+      for (int j =0  ; j < steps ; j+= steps/100)
+      {
+        position->move(0, 0 , (steps)/100);// * steps/100);
+        delay(1);
+      }
+
+      for (int j =0  ; j < 2*steps ; j+= steps/100)
+      {
+        position->move(0, 0 , ((int16_t)-1*(steps/100)));// * steps/100);
+        delay(1);
+      }
+
+      for (int j =0  ; j < steps ; j+= steps/100)
+      {
+        position->move(0, 0 , +steps/100 );//* steps/100);
+        delay(1);
+      }
+
+  }; // actually we need something more tricky here...
 
 
 private:
@@ -106,6 +129,11 @@ void loop()
 	}
 
   ///////////// Position controller functions ///////////////////////////////////////////
+	else if (cmd == "reset")
+	{
+    Serial.println("Reseting postion");
+    scanner->reset();
+	}
 	else if (CheckSingleParameter(cmd, "d", idx, boolean, "down failed"))
 	{
 		Serial.print("Going down by  ");
