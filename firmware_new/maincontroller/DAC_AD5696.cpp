@@ -327,7 +327,7 @@ float DAC_AD5696::SetVoltage(unsigned char channel,
 	Wire.endTransmission();
 }
 
-void DAC_AD5696::SetVoltage(unsigned char channel, int16_t outputVoltage)
+void DAC_AD5696::SetVoltage(unsigned char channel, uint16_t outputVoltage)
 {
 
 

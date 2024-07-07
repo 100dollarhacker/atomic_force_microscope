@@ -178,7 +178,7 @@ public:
 
   	/*! Selects the output voltage of the selected channel. */
 	void SetVoltage(unsigned char channel,
-		int16_t outputVoltage);
+		uint16_t outputVoltage);
 
 	/*! Set the output value of a channel by binary. */
 	int SetOutput(uint8_t channel, uint16_t value);

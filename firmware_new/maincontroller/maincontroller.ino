@@ -12,11 +12,11 @@ class DAC
 {
 public:
   DAC() {ad5696 = new DAC_AD5696();}
-  void X_left( int16_t posttion ){ad5696->SetVoltage(X_LEFT_CHANNEL, posttion);}
-  void X_right( int16_t posttion ){ad5696->SetVoltage(X_RIGHT_CHANNEL, posttion);}
+  void X_left( uint16_t posttion ){ad5696->SetVoltage(X_LEFT_CHANNEL, ZERO_POS + posttion);}
+  void X_right( uint16_t posttion ){ad5696->SetVoltage(X_RIGHT_CHANNEL, ZERO_POS + posttion);}
     
-  void Y_left( int16_t posttion ){ad5696->SetVoltage(Y_LEFT_CHANNEL, posttion);}
-  void Y_right( int16_t posttion){ad5696->SetVoltage(Y_RIGHT_CHANNEL, posttion);}
+  void Y_left( uint16_t posttion ){ad5696->SetVoltage(Y_LEFT_CHANNEL, ZERO_POS + posttion);}
+  void Y_right( uint16_t posttion){ad5696->SetVoltage(Y_RIGHT_CHANNEL, ZERO_POS + posttion);}
     
 private:
   DAC_AD5696* ad5696;
@@ -27,6 +27,7 @@ private:
   const uint16_t X_RIGHT_CHANNEL = 4;
   const uint16_t Y_RIGHT_CHANNEL = 8;
   
+  const uint16_t ZERO_POS = 65536/2;
 
 };
 
@@ -38,17 +39,21 @@ class Position
 
 public:
   Position()  {x_m=0;y_m=0;z_m=0; dac = new DAC();} // probably needs some parameters like width and height of structure that holds the quartz fork probe.
-  void move(int16_t x, int16_t y, int16_t z)
+  void print()
   {
-    x_m += x;
-    y_m += y;
-    z_m += z;
     Serial.print("Position x: ");
     Serial.print(x_m);
     Serial.print(" y: ");
     Serial.print(y_m);
     Serial.print(" z: ");
     Serial.println(z_m);
+
+  }
+  void move(int16_t x, int16_t y, int16_t z)
+  {
+    x_m += x;
+    y_m += y;
+    z_m += z;
 
     dac->X_left( x_m + z_m );
     dac->X_right( -x_m + z_m );
@@ -76,25 +81,33 @@ public:
   void swing(uint16_t steps) {
     Serial.println("Scanner Swing");
 
-    for (int i = 0 ; i < 10 ; i++)
+    for (int i = 0 ; i < 10 ; i++){
       for (int j =0  ; j < steps ; j+= steps/100)
       {
         position->move(0, 0 , (steps)/100);// * steps/100);
-        delay(1);
+        delay(10);
       }
+      position->print();
 
       for (int j =0  ; j < 2*steps ; j+= steps/100)
       {
         position->move(0, 0 , ((int16_t)-1*(steps/100)));// * steps/100);
-        delay(1);
+        delay(10);
       }
+
+      position->print();
 
       for (int j =0  ; j < steps ; j+= steps/100)
       {
         position->move(0, 0 , +steps/100 );//* steps/100);
-        delay(1);
+        delay(10);
       }
 
+      position->print();
+
+
+      Serial.println("Round done !");
+    }
   }; // actually we need something more tricky here...
 
 
@@ -109,7 +122,7 @@ void setup()
 {
     //start serial communication
     Serial.begin(BAUDRATE);
-    Serial.println("AFM is up and running ...");
+    Serial.println("AFMv0.1 is up and running ...");
     
 }
 
