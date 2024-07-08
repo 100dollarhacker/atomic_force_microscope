@@ -1,5 +1,25 @@
 #include "RTx.h"
 #include "DAC_AD5696.h"
+#include <MD_AD9833.h>
+#include <SPI.h>
+
+
+////////////////////// FreqSensor //////////////////////
+// Pins for SPI comm with the AD9833 IC
+#define DATA  5	///< SPI Data pin number
+#define CLK   6	///< SPI Clock pin number
+#define FSYNC 7	///< SPI Load pin number (FSYNC in AD9833 usage)
+
+#define TEST_NUM 3
+
+MD_AD9833	AD(DATA, CLK, FSYNC); // Arbitrary SPI pins
+
+int pincontact = 8;
+int pincontact5v = 9;
+int contact;
+const float BASE_FREQ = 32751.3;
+float freq = BASE_FREQ;
+///////////////////// FreqSensor end ///////////////////////////
 
 //Communication parameters
 #define BAUDRATE 9600//250000   //Serial interfaces communication speed (bps)
@@ -7,11 +27,83 @@
 
 RTx* rtx = new RTx();
 
+class FreqSensor
+{
+public:
+  FreqSensor()
+  {
+    AD.begin();
+    AD.setFrequency(0, freq);
+    pinMode (pincontact, INPUT);
+
+    AD.setMode(MD_AD9833::MODE_SINE);
+    AD.setFrequency(0, freq); //TODO::ES - do we need this?
+  }
+
+  void GetFreq()
+  {
+      for (int i = 0 ; i < 30 ; i++)
+      {
+        delay(500);
+        GetFreqOnce();
+      }
+
+  }
+
+  void GetFreqOnce()
+  {
+    freq += 0.1;
+
+    AD.setFrequency(0, freq);
+    
+    if (freq > BASE_FREQ  + 3)
+    freq = BASE_FREQ ; //-7;
+    avg = 1;
+    // for (count =0, result = 0 ; count < 65535; count ++) 
+    for (int test = 0; test < TEST_NUM ; test++) {
+    for (count =0, result = 0 ; count < 5535; count ++) 
+    {
+
+      // uint16_t x = (PINB & 0x2 )>> 1; 
+      // uint16_t x = PINB & 0b00100000 ; // OK on UNO 
+      x =  (PINB & 0x01)  ;
+      if (x > 0) 
+        result += 1;
+      // result += x ;
+      // PORTB = (x >> 1);    
+    }
+      avg += result;
+    }
+
+    avg = avg / TEST_NUM;
+
+    Serial.print("# of high bits : ");
+    Serial.print(result);
+    Serial.print(" avg  ");
+    Serial.print(avg);
+
+    // Serial.print(x);
+    Serial.print("  @ freq: ");
+    Serial.println(freq);
+  }
+private: 
+  uint16_t count ;
+  uint16_t result ;
+  uint16_t x;
+  uint32_t avg;
+};
 
 class DAC
 {
 public:
-  DAC() {ad5696 = new DAC_AD5696();}
+  DAC() {
+    ad5696 = new DAC_AD5696();
+  	ad5696->Init(16, 0, 0);
+
+	  // turn internal reference off
+  	ad5696->InternalVoltageReference(AD569X_INT_REF_OFF);
+  }
+
   void X_left( uint16_t posttion ){ad5696->SetVoltage(X_LEFT_CHANNEL, ZERO_POS + posttion);}
   void X_right( uint16_t posttion ){ad5696->SetVoltage(X_RIGHT_CHANNEL, ZERO_POS + posttion);}
     
@@ -74,10 +166,10 @@ private:
 class Scanner
 {
 public:
-  Scanner(){position = new Position();};
+  Scanner(){position = new Position(); freqs = new FreqSensor();};
   void reset(){delete position; position = new Position();}
-  void down(uint16_t steps) {Serial.println("Scanner going Down"); position->move(0, 0 , -steps);};
-  void up(uint16_t steps) {Serial.println("Scanner going Up");position->move( 0 , 0, steps);};
+  void down(uint16_t steps) {Serial.println("Scanner going Down"); position->move(0, 0 , -steps); freqs->GetFreq();};
+  void up(uint16_t steps) {Serial.println("Scanner going Up");position->move( 0 , 0, steps); freqs->GetFreq();};
   void swing(uint16_t steps) {
     Serial.println("Scanner Swing");
 
@@ -113,7 +205,7 @@ public:
 
 private:
   Position* position;
-  // FreqSensor* freqs;
+  FreqSensor* freqs;
 
 };
 Scanner* scanner = new Scanner();
@@ -123,6 +215,8 @@ void setup()
     //start serial communication
     Serial.begin(BAUDRATE);
     Serial.println("AFMv0.1 is up and running ...");
+
+    
     
 }
 
