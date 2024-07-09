@@ -10,6 +10,9 @@
 #define CLK   6	///< SPI Clock pin number
 #define FSYNC 7	///< SPI Load pin number (FSYNC in AD9833 usage)
 
+// #define LDAC 9 //<- for nano  //7 //ldac HIGH to stop DAC output while clocking. 
+
+
 #define TEST_NUM 3
 
 MD_AD9833	AD(DATA, CLK, FSYNC); // Arbitrary SPI pins
@@ -93,16 +96,13 @@ private:
   uint32_t avg;
 };
 
+DAC_AD5696* ad5696 = new DAC_AD5696();
+
 class DAC
 {
 public:
   DAC() {
-    ad5696 = new DAC_AD5696();
-  	ad5696->Init(16, 0, 0);
-
-	  // turn internal reference off
-  	ad5696->InternalVoltageReference(AD569X_INT_REF_OFF);
-  }
+    }
 
   void X_left( uint16_t posttion ){ad5696->SetVoltage(X_LEFT_CHANNEL, ZERO_POS + posttion);}
   void X_right( uint16_t posttion ){ad5696->SetVoltage(X_RIGHT_CHANNEL, ZERO_POS + posttion);}
@@ -111,7 +111,7 @@ public:
   void Y_right( uint16_t posttion){ad5696->SetVoltage(Y_RIGHT_CHANNEL, ZERO_POS + posttion);}
     
 private:
-  DAC_AD5696* ad5696;
+  // DAC_AD5696* ad5696;
 
   //ES TOdO : get the right numbers
   const uint16_t X_LEFT_CHANNEL = 1;
@@ -166,14 +166,14 @@ private:
 class Scanner
 {
 public:
-  Scanner(){position = new Position(); freqs = new FreqSensor();};
+  Scanner(){position = new Position(); }// freqs = new FreqSensor();};
   void reset(){delete position; position = new Position();}
-  void down(uint16_t steps) {Serial.println("Scanner going Down"); position->move(0, 0 , -steps); freqs->GetFreq();};
-  void up(uint16_t steps) {Serial.println("Scanner going Up");position->move( 0 , 0, steps); freqs->GetFreq();};
+  void down(uint16_t steps) {Serial.println("Scanner going Down"); position->move(0, 0 , -steps); }//freqs->GetFreq();};
+  void up(uint16_t steps) {Serial.println("Scanner going Up");position->move( 0 , 0, steps); }//freqs->GetFreq();};
   void swing(uint16_t steps) {
     Serial.println("Scanner Swing");
 
-    for (int i = 0 ; i < 10 ; i++){
+    for (int i = 0 ; i < 3 ; i++){
       for (int j =0  ; j < steps ; j+= steps/100)
       {
         position->move(0, 0 , (steps)/100);// * steps/100);
@@ -205,7 +205,7 @@ public:
 
 private:
   Position* position;
-  FreqSensor* freqs;
+  // FreqSensor* freqs;
 
 };
 Scanner* scanner = new Scanner();
@@ -215,7 +215,18 @@ void setup()
     //start serial communication
     Serial.begin(BAUDRATE);
     Serial.println("AFMv0.1 is up and running ...");
+    // unsigned char i2csetup = ADDAC::Setup(LDAC);
+	  // Serial.println(i2csetup == 1 ? "success!" : "failed!");
 
+ 
+  	ad5696->Init(16, 1, 1);
+  //  unsigned char i2csetup = ADDAC::Setup(LDAC);
+	//   Serial.println(i2csetup == 1 ? "success!" : "failed!");
+
+ 
+	  // turn internal reference off
+  	ad5696->InternalVoltageReference(AD569X_INT_REF_OFF);
+ 
     
     
 }
