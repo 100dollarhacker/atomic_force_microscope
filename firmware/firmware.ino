@@ -109,6 +109,7 @@ extern String const PARAM_LINE_LENGTH;
 //This function keeps looping
 void loop()
 {
+  Serial.println("New loop");
 	delay(100);
 	pz_dac->SetVoltage(2, 5.0, 5.0);
 	delay(100);
