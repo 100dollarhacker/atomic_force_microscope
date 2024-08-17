@@ -1,0 +1,25 @@
+min avg  173  @ freq: 32750.80 Landing x: 0 y: 0 z: -31150
+min avg  160  @ freq: 32750.80 Landing x: 0 y: 0 z: -31100
+min avg  165  @ freq: 32750.80 Landing x: 0 y: 0 z: -31050
+min avg  186  @ freq: 32751.00 Landing x: 0 y: 0 z: -31000
+min avg  178  @ freq: 32750.90 Landing x: 0 y: 0 z: -30950
+min avg  182  @ freq: 32751.00 Landing x: 0 y: 0 z: -30900
+min avg  178  @ freq: 32750.80 Landing x: 0 y: 0 z: -30850
+min avg  177  @ freq: 32750.60 Landing x: 0 y: 0 z: -30800
+min avg  189  @ freq: 32750.70 Landing x: 0 y: 0 z: -30750
+min avg  212  @ freq: 32750.50 Landing x: 0 y: 0 z: -30700
+min avg  196  @ freq: 32750.40 Landing x: 0 y: 0 z: -30650
+min avg  236  @ freq: 32751.30 Landing x: 0 y: 0 z: -30600
+min avg  189  @ freq: 32750.70 Landing x: 0 y: 0 z: -30550
+min avg  216  @ freq: 32750.40 Landing x: 0 y: 0 z: -30500
+min avg  180  @ freq: 32750.60 Landing x: 0 y: 0 z: -30450
+min avg  183  @ freq: 32751.00 Landing x: 0 y: 0 z: -30400
+min avg  195  @ freq: 32750.50 Landing x: 0 y: 0 z: -30350
+min avg  201  @ freq: 32750.70 Landing x: 0 y: 0 z: -30300
+min avg  313  @ freq: 32750.60 Landing x: 0 y: 0 z: -30250
+min avg  411  @ freq: 32750.40 Landing x: 0 y: 0 z: -30200
+min avg  225  @ freq: 32751.30 Landing x: 0 y: 0 z: -30150
+min avg  366  @ freq: 32750.70 Landing x: 0 y: 0 z: -30100
+min avg  941  @ freq: 32751.20 Landing x: 0 y: 0 z: -30050
+
+
