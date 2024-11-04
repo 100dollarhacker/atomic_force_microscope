@@ -2865,74 +2865,72 @@ You are welcome to use this library for commercial purposes. For attribution, we
 </deviceset>
 </devicesets>
 </library>
-<library name="OPA656U">
+<library name="OPA656NB_250">
 <packages>
-<package name="SOIC127P599X175-8N">
-<circle x="-4.04" y="2.305" radius="0.1" width="0.2" layer="21"/>
-<circle x="-4.04" y="2.305" radius="0.1" width="0.2" layer="51"/>
-<wire x1="-1.95" y1="2.4525" x2="1.95" y2="2.4525" width="0.127" layer="51"/>
-<wire x1="-1.95" y1="-2.4525" x2="1.95" y2="-2.4525" width="0.127" layer="51"/>
-<wire x1="-1.95" y1="2.525" x2="1.95" y2="2.525" width="0.127" layer="21"/>
-<wire x1="-1.95" y1="-2.525" x2="1.95" y2="-2.525" width="0.127" layer="21"/>
-<wire x1="-1.95" y1="2.4525" x2="-1.95" y2="-2.4525" width="0.127" layer="51"/>
-<wire x1="1.95" y1="2.4525" x2="1.95" y2="-2.4525" width="0.127" layer="51"/>
-<wire x1="-3.705" y1="2.7025" x2="3.705" y2="2.7025" width="0.05" layer="39"/>
-<wire x1="-3.705" y1="-2.7025" x2="3.705" y2="-2.7025" width="0.05" layer="39"/>
-<wire x1="-3.705" y1="2.7025" x2="-3.705" y2="-2.7025" width="0.05" layer="39"/>
-<wire x1="3.705" y1="2.7025" x2="3.705" y2="-2.7025" width="0.05" layer="39"/>
-<text x="-3.56" y="-2.902" size="1.27" layer="27" align="top-left">&gt;VALUE</text>
-<text x="-3.56" y="2.902" size="1.27" layer="25">&gt;NAME</text>
-<smd name="1" x="-2.47" y="1.905" dx="1.97" dy="0.6" layer="1" roundness="25"/>
-<smd name="2" x="-2.47" y="0.635" dx="1.97" dy="0.6" layer="1" roundness="25"/>
-<smd name="3" x="-2.47" y="-0.635" dx="1.97" dy="0.6" layer="1" roundness="25"/>
-<smd name="4" x="-2.47" y="-1.905" dx="1.97" dy="0.6" layer="1" roundness="25"/>
-<smd name="5" x="2.47" y="-1.905" dx="1.97" dy="0.6" layer="1" roundness="25"/>
-<smd name="6" x="2.47" y="-0.635" dx="1.97" dy="0.6" layer="1" roundness="25"/>
-<smd name="7" x="2.47" y="0.635" dx="1.97" dy="0.6" layer="1" roundness="25"/>
-<smd name="8" x="2.47" y="1.905" dx="1.97" dy="0.6" layer="1" roundness="25"/>
+<package name="SOT95P280X145-5N">
+<circle x="-2.41" y="1.05" radius="0.1" width="0.2" layer="21"/>
+<circle x="-2.41" y="1.05" radius="0.1" width="0.2" layer="51"/>
+<text x="-2.6" y="2" size="1.016" layer="25">&gt;NAME</text>
+<text x="-2.6" y="-2" size="1.016" layer="27" align="top-left">&gt;VALUE</text>
+<wire x1="-0.33" y1="1.45" x2="0.33" y2="1.45" width="0.127" layer="21"/>
+<wire x1="0.8" y1="0.335" x2="0.8" y2="-0.335" width="0.127" layer="21"/>
+<wire x1="0.33" y1="-1.45" x2="-0.33" y2="-1.45" width="0.127" layer="21"/>
+<wire x1="-0.8" y1="-1.45" x2="-0.8" y2="1.45" width="0.127" layer="51"/>
+<wire x1="0.8" y1="1.45" x2="0.8" y2="-1.45" width="0.127" layer="51"/>
+<wire x1="-0.8" y1="1.45" x2="0.8" y2="1.45" width="0.127" layer="51"/>
+<wire x1="0.8" y1="-1.45" x2="-0.8" y2="-1.45" width="0.127" layer="51"/>
+<wire x1="-2.11" y1="1.7" x2="2.11" y2="1.7" width="0.05" layer="39"/>
+<wire x1="2.11" y1="1.7" x2="2.11" y2="-1.7" width="0.05" layer="39"/>
+<wire x1="2.11" y1="-1.7" x2="-2.11" y2="-1.7" width="0.05" layer="39"/>
+<wire x1="-2.11" y1="-1.7" x2="-2.11" y2="1.7" width="0.05" layer="39"/>
+<smd name="1" x="-1.255" y="0.95" dx="1.21" dy="0.59" layer="1" roundness="50"/>
+<smd name="2" x="-1.255" y="0" dx="1.21" dy="0.59" layer="1" roundness="50"/>
+<smd name="3" x="-1.255" y="-0.95" dx="1.21" dy="0.59" layer="1" roundness="50"/>
+<smd name="4" x="1.255" y="-0.95" dx="1.21" dy="0.59" layer="1" roundness="50"/>
+<smd name="5" x="1.255" y="0.95" dx="1.21" dy="0.59" layer="1" roundness="50"/>
 </package>
 </packages>
 <symbols>
-<symbol name="OPA656U">
+<symbol name="OPA656NB/250">
 <wire x1="-12.7" y1="10.16" x2="12.7" y2="10.16" width="0.41" layer="94"/>
 <wire x1="12.7" y1="10.16" x2="12.7" y2="-10.16" width="0.41" layer="94"/>
 <wire x1="12.7" y1="-10.16" x2="-12.7" y2="-10.16" width="0.41" layer="94"/>
 <wire x1="-12.7" y1="-10.16" x2="-12.7" y2="10.16" width="0.41" layer="94"/>
 <text x="-12.7" y="11.16" size="2.0828" layer="95" ratio="10" rot="SR0">&gt;NAME</text>
 <text x="-12.7" y="-14.16" size="2.0828" layer="96" ratio="10" rot="SR0">&gt;VALUE</text>
-<pin name="NEG" x="-17.78" y="0" length="middle" direction="in"/>
-<pin name="POS" x="-17.78" y="-2.54" length="middle" direction="in"/>
+<pin name="NEG_IN" x="-17.78" y="0" length="middle" direction="in"/>
+<pin name="POS_IN" x="-17.78" y="-2.54" length="middle" direction="in"/>
 <pin name="+VS" x="17.78" y="7.62" length="middle" direction="pwr" rot="R180"/>
 <pin name="-VS" x="17.78" y="5.08" length="middle" direction="pwr" rot="R180"/>
-<pin name="OUTPUT" x="17.78" y="0" length="middle" direction="out" rot="R180"/>
+<pin name="OUT" x="17.78" y="0" length="middle" direction="out" rot="R180"/>
 </symbol>
 </symbols>
 <devicesets>
-<deviceset name="OPA656U" prefix="U">
-<description> &lt;a href="https://pricing.snapeda.com/parts/OPA656U/Texas%20Instruments/view-part?ref=eda"&gt;Check availability&lt;/a&gt;</description>
+<deviceset name="OPA656NB/250" prefix="U">
+<description> &lt;a href="https://pricing.snapeda.com/parts/OPA656NB/250/Texas%20Instruments/view-part?ref=eda"&gt;Check availability&lt;/a&gt;</description>
 <gates>
-<gate name="A" symbol="OPA656U" x="0" y="0"/>
+<gate name="A" symbol="OPA656NB/250" x="0" y="0"/>
 </gates>
 <devices>
-<device name="" package="SOIC127P599X175-8N">
+<device name="" package="SOT95P280X145-5N">
 <connects>
-<connect gate="A" pin="+VS" pad="7"/>
-<connect gate="A" pin="-VS" pad="4"/>
-<connect gate="A" pin="NEG" pad="2"/>
-<connect gate="A" pin="OUTPUT" pad="6"/>
-<connect gate="A" pin="POS" pad="3"/>
+<connect gate="A" pin="+VS" pad="5"/>
+<connect gate="A" pin="-VS" pad="2"/>
+<connect gate="A" pin="NEG_IN" pad="4"/>
+<connect gate="A" pin="OUT" pad="1"/>
+<connect gate="A" pin="POS_IN" pad="3"/>
 </connects>
 <technologies>
 <technology name="">
 <attribute name="AVAILABILITY" value="In Stock"/>
-<attribute name="CHECK_PRICES" value="https://www.snapeda.com/parts/OPA656U/Texas+Instruments/view-part/?ref=eda"/>
+<attribute name="CHECK_PRICES" value="https://www.snapeda.com/parts/OPA656NB/250/Texas+Instruments/view-part/?ref=eda"/>
 <attribute name="DESCRIPTION" value=" Wideband, Unity Gain Stable FET-Input Operational Amplifier "/>
 <attribute name="MF" value="Texas Instruments"/>
-<attribute name="MP" value="OPA656U"/>
-<attribute name="PACKAGE" value="SOIC-8 Texas Instruments"/>
+<attribute name="MP" value="OPA656NB/250"/>
+<attribute name="PACKAGE" value="SOT-23-5 Texas Instruments"/>
 <attribute name="PRICE" value="None"/>
-<attribute name="PURCHASE-URL" value="https://www.snapeda.com/api/url_track_click_mouser/?unipart_id=454826&amp;manufacturer=Texas Instruments&amp;part_name=OPA656U&amp;search_term=opa656"/>
-<attribute name="SNAPEDA_LINK" value="https://www.snapeda.com/parts/OPA656U/Texas+Instruments/view-part/?ref=snap"/>
+<attribute name="PURCHASE-URL" value="https://www.snapeda.com/api/url_track_click_mouser/?unipart_id=911932&amp;manufacturer=Texas Instruments&amp;part_name=OPA656NB/250&amp;search_term=opa656"/>
+<attribute name="SNAPEDA_LINK" value="https://www.snapeda.com/parts/OPA656NB/250/Texas+Instruments/view-part/?ref=snap"/>
 </technology>
 </technologies>
 </device>
@@ -2975,7 +2973,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <part name="C10" library="SparkFun-Capacitors" library_urn="urn:adsk.eagle:library:510" deviceset="10UF" device="-0805-10V-10%" package3d_urn="urn:adsk.eagle:package:41385092/1" value="10uF"/>
 <part name="C11" library="SparkFun-Capacitors" library_urn="urn:adsk.eagle:library:510" deviceset="10UF" device="-0805-10V-10%" package3d_urn="urn:adsk.eagle:package:41385092/1" value="10uF"/>
 <part name="J4" library="USBR-A-S-S-O-TH" deviceset="USBR-A-S-S-O-TH" device=""/>
-<part name="U4" library="OPA656U" deviceset="OPA656U" device=""/>
+<part name="U1" library="OPA656NB_250" deviceset="OPA656NB/250" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -3078,7 +3076,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <attribute name="NAME" x="12.7" y="115.57" size="1.778" layer="95" rot="R180"/>
 <attribute name="VALUE" x="12.7" y="135.89" size="1.778" layer="96" rot="R180" align="top-left"/>
 </instance>
-<instance part="U4" gate="A" x="66.04" y="81.28" smashed="yes">
+<instance part="U1" gate="A" x="66.04" y="81.28" smashed="yes">
 <attribute name="NAME" x="53.34" y="92.44" size="2.0828" layer="95" ratio="10" rot="SR0"/>
 <attribute name="VALUE" x="53.34" y="67.12" size="2.0828" layer="96" ratio="10" rot="SR0"/>
 </instance>
@@ -3118,7 +3116,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <junction x="93.98" y="81.28"/>
 <junction x="104.14" y="81.28"/>
 <label x="149.86" y="71.12" size="1.778" layer="95"/>
-<pinref part="U4" gate="A" pin="-VS"/>
+<pinref part="U1" gate="A" pin="-VS"/>
 </segment>
 </net>
 <net name="AGND" class="0">
@@ -3162,7 +3160,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="109.22" y1="91.44" x2="116.84" y2="91.44" width="0.1524" layer="91"/>
 <junction x="109.22" y="91.44"/>
 <junction x="116.84" y="91.44"/>
-<pinref part="U4" gate="A" pin="POS"/>
+<pinref part="U1" gate="A" pin="POS_IN"/>
 </segment>
 <segment>
 <pinref part="U3" gate="A" pin="+IN"/>
@@ -3236,7 +3234,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="22.86" y1="116.84" x2="22.86" y2="121.92" width="0.1524" layer="91"/>
 <pinref part="J4" gate="G$1" pin="D-"/>
 <wire x1="17.78" y1="121.92" x2="22.86" y2="121.92" width="0.1524" layer="91"/>
-<pinref part="U4" gate="A" pin="NEG"/>
+<pinref part="U1" gate="A" pin="NEG_IN"/>
 </segment>
 </net>
 <net name="N$9" class="0">
@@ -3280,7 +3278,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="104.14" y1="66.04" x2="104.14" y2="50.8" width="0.1524" layer="91"/>
 <junction x="104.14" y="50.8"/>
 <label x="86.36" y="78.74" size="1.778" layer="95"/>
-<pinref part="U4" gate="A" pin="OUTPUT"/>
+<pinref part="U1" gate="A" pin="OUT"/>
 </segment>
 </net>
 <net name="VO" class="0">
@@ -3354,7 +3352,7 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <wire x1="129.54" y1="76.2" x2="129.54" y2="88.9" width="0.1524" layer="91"/>
 <wire x1="129.54" y1="88.9" x2="139.7" y2="88.9" width="0.1524" layer="91"/>
 <wire x1="139.7" y1="88.9" x2="139.7" y2="73.66" width="0.1524" layer="91"/>
-<pinref part="U4" gate="A" pin="+VS"/>
+<pinref part="U1" gate="A" pin="+VS"/>
 </segment>
 </net>
 </nets>

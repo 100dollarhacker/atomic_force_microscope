@@ -13,15 +13,18 @@
 #define LDAC 9 //<- for nano  //7 //ldac HIGH to stop DAC output while clocking. 
 
 
-#define TEST_NUM 6
+#define TEST_NUM 1//6
 
 MD_AD9833	AD(DATA, CLK, FSYNC); // Arbitrary SPI pins
 
 int pincontact = 8;
 int pincontact5v = 9;
 int contact;
-const float BASE_FREQ = 31262;//32750.3;
+// const float BASE_FREQ = 31262;//32750.3;
+float BASE_FREQ = 32462.0;//32770.8;//32750.3;
 float freq = BASE_FREQ;
+const uint16_t COUNT_NUM = 555;//55535;
+
 ///////////////////// FreqSensor end ///////////////////////////
 
 //Communication parameters
@@ -55,13 +58,55 @@ public:
     AD.setFrequency(0, freq); //TODO::ES - do we need this?
   }
 
+  void GetFreqDown()
+  {
+    freq -= 1;
+    freq_resp res = GetFreqOnce(0, BASE_FREQ, BASE_FREQ );
+  }
+  void GetFreqDownTenth()
+  {
+    freq -= 0.1;
+    freq_resp res = GetFreqOnce(0, BASE_FREQ, BASE_FREQ );
+  }
+
+  void GetFreqUp()
+  {
+    freq += 1;
+    freq_resp res = GetFreqOnce(0, BASE_FREQ, BASE_FREQ );
+  }
+
+ void GetFreqUpTenth()
+  {
+    freq += 0.1;
+    freq_resp res = GetFreqOnce(0, BASE_FREQ, BASE_FREQ );
+  }
+
+  void setPhase(int phase)
+  {
+      AD.setPhase(0,  phase);
+  }
+
+  void setBaseFreq(int base_freq)
+  {
+      BASE_FREQ = base_freq;
+  }
+
   void GetFreqRange()
   {
+      // const int RANGE = 50;//50;
+      const int RANGE = 100;//10;//50;
       float delta=0;
-      for (int i = 0 ; i < 50 ; i++)
+      // for (int i = 0 ; i < 2*RANGE ; i=i+25)
+      for (int i = 0 ; i < 2*RANGE ; i++)
+      // for (int i = 0 ; i < RANGE ; i++)
       {
-          freq = BASE_FREQ - 20 + i ;
-          freq_resp res = GetFreqOnce(delta, BASE_FREQ-20, BASE_FREQ + 20);
+          // freq = BASE_FREQ + i ;
+          // freq = 40000.0 + i ;
+          freq = BASE_FREQ - RANGE + i ;
+          // freq = 32462.0 - RANGE/10 + ((float)i)/10 ;
+          // freq = BASE_FREQ -RANGE/10 + i/10; // - 5 + i*0.1 ;
+          // freq_resp res = GetFreqOnce(delta, BASE_FREQ-RANGE, BASE_FREQ + RANGE);
+          freq_resp res = GetFreqOnce(delta, freq, freq, true);
       }
   }
 
@@ -69,13 +114,14 @@ public:
   {
       freq_resp min_res;
       min_res.result = 9999;
-      freq = BASE_FREQ;
+      // freq = BASE_FREQ-2;
       float delta = 0.1;
-      for (int i = 0 ; i < 15 ; i++)
+      for (int i = 0 ; i < 20 ; i++)
       {
-        // delay(5);
-        freq_resp res = GetFreqOnce(delta, BASE_FREQ, BASE_FREQ + 3);
-        if (res.result < min_res.result)
+        // delay(100);
+        freq = BASE_FREQ - 1 + i * delta ;
+        freq_resp res = GetFreqOnce(delta, BASE_FREQ - 5, BASE_FREQ + 5);
+        if (res.result < min_res.result || COUNT_NUM - res.result < min_res.result)
            min_res = res;
       }
 
@@ -90,19 +136,19 @@ public:
 
   }
 private:
-  freq_resp GetFreqOnce(float delta, float base_freq, float max_freq)
+  freq_resp GetFreqOnce(float delta, float base_freq, float max_freq, bool print = 0)
   {
     freq += delta;
     freq_resp fres;
 
     AD.setFrequency(0, freq);
     
-    if (freq > max_freq)
-       freq = base_freq ; //-7;
+    // if (freq > max_freq)
+    //    freq = base_freq ; //-7;
     avg = 1;
     // for (count =0, result = 0 ; count < 65535; count ++) 
     for (int test = 0; test < TEST_NUM ; test++) {
-    for (count =0, result = 0 ; count < 5535; count ++) 
+    for (count =0, result = 0 ; count < COUNT_NUM; count ++) 
     {
 
       // uint16_t x = (PINB & 0x2 )>> 1; 
@@ -117,18 +163,23 @@ private:
     }
 
     avg = avg / TEST_NUM;
-
+if (print)
+{
     Serial.print("# of high bits : ");
     Serial.print(result);
     Serial.print(" avg  ");
     Serial.print(avg);
+    Serial.print("   ");
+    Serial.print(COUNT_NUM-avg);
+
+    // if (5535-avg < 2000) Serial.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
 
     // Serial.print(x);
     Serial.print("  @ freq: ");
     Serial.println(freq);
-
+}
     fres.freq = freq;
-    fres.result = result;
+    fres.result = result < COUNT_NUM - result ? result: COUNT_NUM - result;
     
     return fres;
 
@@ -299,9 +350,38 @@ public:
        freqs->GetFreq(); 
   }
 
+  void setPhase(int phase)
+  {
+      freqs->setPhase(phase);
+  }
+  void setBaseFreq(int base_freq)
+  {
+      freqs->setBaseFreq(base_freq);
+  }
+
   void GetFreqRange()
   {
       freqs->GetFreqRange();
+  }
+
+ void GetFreqDown()
+  {
+      freqs->GetFreqDown();
+  }
+
+   void GetFreqUp()
+  {
+      freqs->GetFreqUp();
+  }
+
+ void GetFreqDownTenth()
+  {
+      freqs->GetFreqDownTenth();
+  }
+
+   void GetFreqUpTenth()
+  {
+      freqs->GetFreqUpTenth();
   }
 
   void ReadLine()
@@ -313,7 +393,8 @@ public:
   {
       XYZ_t xyz;
       // while (freqs->GetFreq().result < THRESHOLD) { 
-      for (int i =0 ; i < 100 & freqs->GetFreq().result < THRESHOLD; i++ )   {
+      for (int i =0 ; i < 10 & freqs->GetFreq().result < THRESHOLD; i++ )   {
+          delay(100);
           xyz = position->move(0, 0 , steps);
           Serial.print("Landing x: ");
           Serial.print(xyz.x);
@@ -332,7 +413,7 @@ public:
 private:
   Position* position;
   FreqSensor* freqs;
-  const uint16_t THRESHOLD = 600;
+  const uint16_t THRESHOLD = 80;
 
 };
 Scanner* scanner = new Scanner();
@@ -404,17 +485,51 @@ void loop()
 
 
 //////////////  Freq. sensor functions ////////////////////////////////////
+   else if (CheckSingleParameter(cmd, "bf", idx, boolean, "base freq failed"))
+	{
+		Serial.print("Setting BASE_FREQ to  ");
+		Serial.print(idx);
+    scanner->setBaseFreq(idx);
+	}
+
+  else if (CheckSingleParameter(cmd, "ph", idx, boolean, "phase failed"))
+	{
+		Serial.print("Setting PHASE to  ");
+		Serial.print(idx);
+    scanner->setPhase(idx);
+	}
+    
     // scan for operation frequency step of 1-2Hz
     else if (cmd == "range")
     {
       scanner->GetFreqRange();
     }
 
+    else if (cmd == "fd")
+    {
+      scanner->GetFreqDown();
+    }
+
+    else if (cmd == "fu")
+    {
+      scanner->GetFreqUp();
+    }
+
+     else if (cmd == "fdd")
+    {
+      scanner->GetFreqDownTenth();
+    }
+
+    else if (cmd == "fuu")
+    {
+      scanner->GetFreqUpTenth();
+    }
     // Scan for exact frequency steps 0.1Hz
     else if (cmd == "freq")
     {
       scanner->GetFreq();
     }
+
 
 
     // if command scaninit X steps

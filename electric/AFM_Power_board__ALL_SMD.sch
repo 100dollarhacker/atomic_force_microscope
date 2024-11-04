@@ -16119,6 +16119,149 @@ Added bigger pads to the TO-92 package</description>
 </deviceset>
 </devicesets>
 </library>
+<library name="IC_Power-Management" urn="urn:adsk.eagle:library:16378392">
+<description>&lt;B&gt;Voltage Regulators, Drivers, Switching controllers</description>
+<packages>
+<package name="TO220V" urn="urn:adsk.eagle:footprint:16154/1" library_version="15">
+<description>&lt;b&gt;TO 200 vertical&lt;/b&gt;</description>
+<wire x1="5.08" y1="-1.143" x2="4.953" y2="-4.064" width="0.127" layer="21"/>
+<wire x1="4.699" y1="-4.318" x2="4.953" y2="-4.064" width="0.127" layer="21"/>
+<wire x1="4.699" y1="-4.318" x2="-4.699" y2="-4.318" width="0.127" layer="21"/>
+<wire x1="-4.953" y1="-4.064" x2="-4.699" y2="-4.318" width="0.127" layer="21"/>
+<wire x1="-4.953" y1="-4.064" x2="-5.08" y2="-1.143" width="0.127" layer="21"/>
+<circle x="-4.4958" y="-3.7084" radius="0.254" width="0.127" layer="21"/>
+<pad name="1" x="-2.54" y="-2.54" drill="1.016" shape="long" rot="R90"/>
+<pad name="2" x="0" y="-2.54" drill="1.016" shape="long" rot="R90"/>
+<pad name="3" x="2.54" y="-2.54" drill="1.016" shape="long" rot="R90"/>
+<text x="-5.08" y="-6.0452" size="1.27" layer="25" ratio="10">&gt;NAME</text>
+<text x="-5.08" y="-7.62" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
+<text x="-3.175" y="-3.175" size="1.27" layer="51" ratio="10">1</text>
+<text x="-0.635" y="-3.175" size="1.27" layer="51" ratio="10">2</text>
+<text x="1.905" y="-3.175" size="1.27" layer="51" ratio="10">3</text>
+<rectangle x1="-5.334" y1="-0.762" x2="5.334" y2="0" layer="21"/>
+<rectangle x1="-5.334" y1="-1.27" x2="-3.429" y2="-0.762" layer="21"/>
+<rectangle x1="-1.651" y1="-1.27" x2="-0.889" y2="-0.762" layer="21"/>
+<rectangle x1="-3.429" y1="-1.27" x2="-1.651" y2="-0.762" layer="51"/>
+<rectangle x1="0.889" y1="-1.27" x2="1.651" y2="-0.762" layer="21"/>
+<rectangle x1="3.429" y1="-1.27" x2="5.334" y2="-0.762" layer="21"/>
+<rectangle x1="-0.889" y1="-1.27" x2="0.889" y2="-0.762" layer="51"/>
+<rectangle x1="1.651" y1="-1.27" x2="3.429" y2="-0.762" layer="51"/>
+</package>
+<package name="SOT230P700X170-4" urn="urn:adsk.eagle:footprint:16494935/2" library_version="15">
+<description>4-SOT223, 2.30 mm pitch, 7.00 mm span, 6.50 X 3.50 X 1.70 mm body
+&lt;p&gt;4-pin SOT223 package with 2.30 mm pitch, 7.00 mm span with body size 6.50 X 3.50 X 1.70 mm&lt;/p&gt;</description>
+<circle x="-2.9276" y="3.253" radius="0.25" width="0" layer="21"/>
+<wire x1="-1.85" y1="3.003" x2="-1.85" y2="3.35" width="0.12" layer="21"/>
+<wire x1="-1.85" y1="3.35" x2="1.85" y2="3.35" width="0.12" layer="21"/>
+<wire x1="1.85" y1="3.35" x2="1.85" y2="1.8486" width="0.12" layer="21"/>
+<wire x1="-1.85" y1="-3.003" x2="-1.85" y2="-3.35" width="0.12" layer="21"/>
+<wire x1="-1.85" y1="-3.35" x2="1.85" y2="-3.35" width="0.12" layer="21"/>
+<wire x1="1.85" y1="-3.35" x2="1.85" y2="-1.8486" width="0.12" layer="21"/>
+<wire x1="1.85" y1="-3.35" x2="-1.85" y2="-3.35" width="0.12" layer="51"/>
+<wire x1="-1.85" y1="-3.35" x2="-1.85" y2="3.35" width="0.12" layer="51"/>
+<wire x1="-1.85" y1="3.35" x2="1.85" y2="3.35" width="0.12" layer="51"/>
+<wire x1="1.85" y1="3.35" x2="1.85" y2="-3.35" width="0.12" layer="51"/>
+<smd name="1" x="-3.075" y="2.3" dx="1.8603" dy="0.8979" layer="1"/>
+<smd name="2" x="-3.075" y="0" dx="1.8603" dy="0.8979" layer="1"/>
+<smd name="3" x="-3.075" y="-2.3" dx="1.8603" dy="0.8979" layer="1"/>
+<smd name="4" x="3.075" y="0" dx="1.8603" dy="3.1891" layer="1"/>
+<text x="0" y="4.138" size="1.27" layer="25" align="bottom-center">&gt;NAME</text>
+<text x="0" y="-3.985" size="1.27" layer="27" align="top-center">&gt;VALUE</text>
+</package>
+</packages>
+<packages3d>
+<package3d name="TO220V" urn="urn:adsk.eagle:package:16417/2" type="model" library_version="15">
+<description>TO 200 vertical</description>
+<packageinstances>
+<packageinstance name="TO220V"/>
+</packageinstances>
+</package3d>
+<package3d name="SOT230P700X170-4" urn="urn:adsk.eagle:package:16494942/2" type="model" library_version="15">
+<description>4-SOT223, 2.30 mm pitch, 7.00 mm span, 6.50 X 3.50 X 1.70 mm body
+&lt;p&gt;4-pin SOT223 package with 2.30 mm pitch, 7.00 mm span with body size 6.50 X 3.50 X 1.70 mm&lt;/p&gt;</description>
+<packageinstances>
+<packageinstance name="SOT230P700X170-4"/>
+</packageinstances>
+</package3d>
+</packages3d>
+<symbols>
+<symbol name="78XX" urn="urn:adsk.eagle:symbol:34281528/1" library_version="15">
+<wire x1="-7.62" y1="-5.08" x2="7.62" y2="-5.08" width="0.254" layer="94"/>
+<wire x1="7.62" y1="-5.08" x2="7.62" y2="2.54" width="0.254" layer="94"/>
+<wire x1="7.62" y1="2.54" x2="-7.62" y2="2.54" width="0.254" layer="94"/>
+<wire x1="-7.62" y1="2.54" x2="-7.62" y2="-5.08" width="0.254" layer="94"/>
+<text x="0" y="4" size="1.778" layer="95" align="center">&gt;NAME</text>
+<text x="2.54" y="-7" size="1.778" layer="96" align="center-left">&gt;VALUE</text>
+<text x="-2.032" y="-4.318" size="1.524" layer="95">GND</text>
+<pin name="VI" x="-10.16" y="0" length="short" direction="in"/>
+<pin name="GND" x="0" y="-7.62" visible="pad" length="short" direction="pas" rot="R90"/>
+<pin name="VO" x="10.16" y="0" length="short" direction="out" rot="R180"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="LM7805" urn="urn:adsk.eagle:component:34281530/2" prefix="IC" library_version="15">
+<description>&lt;b&gt;5V Voltage Regulator&lt;/b&gt;&lt;p&gt;
+
+&lt;p&gt;Reference 
+&lt;a href="https://www.ti.com/lit/ds/symlink/lm340.pdf"&gt;Datasheet&lt;/a&gt;</description>
+<gates>
+<gate name="G$1" symbol="78XX" x="0" y="0"/>
+</gates>
+<devices>
+<device name="_TO220V" package="TO220V">
+<connects>
+<connect gate="G$1" pin="GND" pad="2"/>
+<connect gate="G$1" pin="VI" pad="1"/>
+<connect gate="G$1" pin="VO" pad="3"/>
+</connects>
+<package3dinstances>
+<package3dinstance package3d_urn="urn:adsk.eagle:package:16417/2"/>
+</package3dinstances>
+<technologies>
+<technology name="">
+<attribute name="CATEGORY" value="IC_Linear" constant="no"/>
+<attribute name="DESCRIPTION" value="5V Voltage Regulator" constant="no"/>
+<attribute name="MANUFACTURER" value="Generic" constant="no"/>
+<attribute name="MPN" value="Generic" constant="no"/>
+<attribute name="OPERATING_TEMP" value="" constant="no"/>
+<attribute name="PART_STATUS" value="" constant="no"/>
+<attribute name="ROHS_COMPLIANT" value="" constant="no"/>
+<attribute name="SERIES" value="LM7805" constant="no"/>
+<attribute name="SUB-CATEGORY" value="Voltage Regulator" constant="no"/>
+<attribute name="THERMALLOSS" value="" constant="no"/>
+<attribute name="TYPE" value="5V" constant="no"/>
+</technology>
+</technologies>
+</device>
+<device name="_SOT223" package="SOT230P700X170-4">
+<connects>
+<connect gate="G$1" pin="GND" pad="2 4"/>
+<connect gate="G$1" pin="VI" pad="1"/>
+<connect gate="G$1" pin="VO" pad="3"/>
+</connects>
+<package3dinstances>
+<package3dinstance package3d_urn="urn:adsk.eagle:package:16494942/2"/>
+</package3dinstances>
+<technologies>
+<technology name="">
+<attribute name="CATEGORY" value="IC_Logic" constant="no"/>
+<attribute name="DESCRIPTION" value="5V Voltage Regulator" constant="no"/>
+<attribute name="MANUFACTURER" value="Generic" constant="no"/>
+<attribute name="MPN" value="Generic" constant="no"/>
+<attribute name="OPERATING_TEMP" value="" constant="no"/>
+<attribute name="PART_STATUS" value="" constant="no"/>
+<attribute name="ROHS_COMPLIANT" value="" constant="no"/>
+<attribute name="SERIES" value="LM7805" constant="no"/>
+<attribute name="SUB-CATEGORY" value="Voltage Regulator" constant="no"/>
+<attribute name="THERMALLOSS" value="" constant="no"/>
+<attribute name="TYPE" value="5V" constant="no"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -16144,10 +16287,10 @@ Added bigger pads to the TO-92 package</description>
 <part name="D2" library="diode" library_urn="urn:adsk.eagle:library:210" deviceset="DIODE-" device="SOD123" package3d_urn="urn:adsk.eagle:package:43420/1" value="1n4004"/>
 <part name="D3" library="diode" library_urn="urn:adsk.eagle:library:210" deviceset="DIODE-" device="SOD123" package3d_urn="urn:adsk.eagle:package:43420/1" value="1n4004"/>
 <part name="J4" library="SparkFun-Connectors" library_urn="urn:adsk.eagle:library:513" deviceset="CONN_04" device="LONGPADS" package3d_urn="urn:adsk.eagle:package:38098/2"/>
-<part name="IC2" library="adafruit" library_urn="urn:adsk.eagle:library:420" deviceset="78*" device="T" package3d_urn="urn:adsk.eagle:package:6240670/1" technology="15"/>
 <part name="C6" library="BeagleBone_Black_Wireless" library_urn="urn:adsk.eagle:library:6644236" deviceset="C-US" device="050-024X044" package3d_urn="urn:adsk.eagle:package:8118541/1" value="10uF"/>
 <part name="C7" library="BeagleBone_Black_Wireless" library_urn="urn:adsk.eagle:library:6644236" deviceset="C-US" device="050-024X044" package3d_urn="urn:adsk.eagle:package:8118541/1" value="1uF"/>
-<part name="IC4" library="adafruit" library_urn="urn:adsk.eagle:library:420" deviceset="78*" device="T" package3d_urn="urn:adsk.eagle:package:6240670/1" technology="05"/>
+<part name="IC1" library="IC_Power-Management" library_urn="urn:adsk.eagle:library:16378392" deviceset="LM7805" device="_SOT223" package3d_urn="urn:adsk.eagle:package:16494942/2"/>
+<part name="IC3" library="adafruit" library_urn="urn:adsk.eagle:library:420" deviceset="78*" device="DT" package3d_urn="urn:adsk.eagle:package:6240672/1" technology="15"/>
 </parts>
 <sheets>
 <sheet>
@@ -16213,10 +16356,6 @@ Added bigger pads to the TO-92 package</description>
 <attribute name="VALUE" x="91.694" y="124.46" size="1.778" layer="96" font="vector" rot="R270"/>
 <attribute name="NAME" x="107.188" y="124.46" size="1.778" layer="95" font="vector" rot="R270"/>
 </instance>
-<instance part="IC2" gate="A1" x="22.86" y="109.22" smashed="yes">
-<attribute name="NAME" x="15.24" y="114.935" size="1.778" layer="95"/>
-<attribute name="VALUE" x="15.24" y="112.395" size="1.778" layer="96"/>
-</instance>
 <instance part="C6" gate="G$1" x="38.1" y="96.52" smashed="yes">
 <attribute name="NAME" x="39.116" y="97.155" size="1.778" layer="95"/>
 <attribute name="VALUE" x="39.116" y="92.329" size="1.778" layer="96"/>
@@ -16225,9 +16364,13 @@ Added bigger pads to the TO-92 package</description>
 <attribute name="NAME" x="49.276" y="97.155" size="1.778" layer="95" font="fixed"/>
 <attribute name="VALUE" x="49.276" y="92.329" size="1.778" layer="96"/>
 </instance>
-<instance part="IC4" gate="A1" x="68.58" y="109.22" smashed="yes">
-<attribute name="NAME" x="60.96" y="114.935" size="1.778" layer="95"/>
-<attribute name="VALUE" x="60.96" y="112.395" size="1.778" layer="96"/>
+<instance part="IC1" gate="G$1" x="68.58" y="109.22" smashed="yes">
+<attribute name="NAME" x="68.58" y="113.22" size="1.778" layer="95" align="center"/>
+<attribute name="VALUE" x="71.12" y="102.22" size="1.778" layer="96" align="center-left"/>
+</instance>
+<instance part="IC3" gate="A1" x="22.86" y="109.22" smashed="yes">
+<attribute name="NAME" x="15.24" y="114.935" size="1.778" layer="95"/>
+<attribute name="VALUE" x="15.24" y="112.395" size="1.778" layer="96"/>
 </instance>
 </instances>
 <busses>
@@ -16267,7 +16410,6 @@ Added bigger pads to the TO-92 package</description>
 <wire x1="68.58" y1="101.6" x2="68.58" y2="86.36" width="0.1524" layer="91"/>
 <junction x="68.58" y="86.36"/>
 <pinref part="J4" gate="J1" pin="1"/>
-<pinref part="IC2" gate="A1" pin="GND"/>
 <wire x1="22.86" y1="101.6" x2="22.86" y2="86.36" width="0.1524" layer="91"/>
 <junction x="22.86" y="86.36"/>
 <pinref part="C6" gate="G$1" pin="2"/>
@@ -16276,7 +16418,8 @@ Added bigger pads to the TO-92 package</description>
 <pinref part="C7" gate="G$1" pin="2"/>
 <wire x1="48.26" y1="91.44" x2="48.26" y2="86.36" width="0.1524" layer="91"/>
 <junction x="48.26" y="86.36"/>
-<pinref part="IC4" gate="A1" pin="GND"/>
+<pinref part="IC1" gate="G$1" pin="GND"/>
+<pinref part="IC3" gate="A1" pin="GND"/>
 </segment>
 </net>
 <net name="V5_OUT" class="0">
@@ -16291,8 +16434,8 @@ Added bigger pads to the TO-92 package</description>
 <wire x1="91.44" y1="109.22" x2="91.44" y2="93.98" width="0.1524" layer="91"/>
 <junction x="91.44" y="93.98"/>
 <pinref part="J4" gate="J1" pin="2"/>
-<pinref part="IC4" gate="A1" pin="VO"/>
 <wire x1="78.74" y1="109.22" x2="91.44" y2="109.22" width="0.1524" layer="91"/>
+<pinref part="IC1" gate="G$1" pin="VO"/>
 </segment>
 </net>
 <net name="GROUND" class="0">
@@ -16310,11 +16453,12 @@ Added bigger pads to the TO-92 package</description>
 <wire x1="-50.8" y1="81.28" x2="-50.8" y2="88.9" width="0.1524" layer="91"/>
 <wire x1="-50.8" y1="81.28" x2="-48.26" y2="81.28" width="0.1524" layer="91"/>
 <junction x="-50.8" y="81.28"/>
-<wire x1="-48.26" y1="81.28" x2="-48.26" y2="71.12" width="0.1524" layer="91"/>
-<wire x1="-48.26" y1="71.12" x2="-27.94" y2="71.12" width="0.1524" layer="91"/>
+<wire x1="-48.26" y1="81.28" x2="-48.26" y2="63.5" width="0.1524" layer="91"/>
 <pinref part="D2" gate="G$1" pin="A"/>
 <pinref part="D6" gate="G$1" pin="A"/>
-<wire x1="-27.94" y1="71.12" x2="-27.94" y2="86.36" width="0.1524" layer="91"/>
+<wire x1="-48.26" y1="63.5" x2="-35.56" y2="63.5" width="0.1524" layer="91"/>
+<wire x1="-35.56" y1="63.5" x2="-35.56" y2="86.36" width="0.1524" layer="91"/>
+<junction x="-35.56" y="86.36"/>
 </segment>
 </net>
 <net name="VMINUS5_OUT" class="0">
@@ -16326,7 +16470,6 @@ Added bigger pads to the TO-92 package</description>
 <wire x1="101.6" y1="104.14" x2="149.86" y2="104.14" width="0.1524" layer="91"/>
 <wire x1="149.86" y1="104.14" x2="149.86" y2="63.5" width="0.1524" layer="91"/>
 <wire x1="149.86" y1="63.5" x2="96.52" y2="63.5" width="0.1524" layer="91"/>
-<wire x1="96.52" y1="63.5" x2="96.52" y2="71.12" width="0.1524" layer="91"/>
 <pinref part="J4" gate="J1" pin="3"/>
 </segment>
 </net>
@@ -16363,9 +16506,22 @@ Added bigger pads to the TO-92 package</description>
 <pinref part="D5" gate="G$1" pin="C"/>
 </segment>
 </net>
-<net name="N$1" class="0">
+<net name="N$3" class="0">
 <segment>
-<pinref part="IC2" gate="A1" pin="VO"/>
+<wire x1="5.08" y1="93.98" x2="5.08" y2="91.44" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="N$5" class="0">
+<segment>
+<wire x1="12.7" y1="109.22" x2="7.62" y2="109.22" width="0.1524" layer="91"/>
+<wire x1="7.62" y1="109.22" x2="7.62" y2="93.98" width="0.1524" layer="91"/>
+<pinref part="L3" gate="G$1" pin="2"/>
+<wire x1="7.62" y1="93.98" x2="0" y2="93.98" width="0.1524" layer="91"/>
+<pinref part="IC3" gate="A1" pin="VI"/>
+</segment>
+</net>
+<net name="V15+" class="0">
+<segment>
 <wire x1="33.02" y1="109.22" x2="38.1" y2="109.22" width="0.1524" layer="91"/>
 <pinref part="C6" gate="G$1" pin="1"/>
 <wire x1="38.1" y1="109.22" x2="48.26" y2="109.22" width="0.1524" layer="91"/>
@@ -16381,24 +16537,13 @@ Added bigger pads to the TO-92 package</description>
 <wire x1="88.9" y1="111.76" x2="88.9" y2="116.84" width="0.1524" layer="91"/>
 <wire x1="88.9" y1="116.84" x2="38.1" y2="116.84" width="0.1524" layer="91"/>
 <wire x1="38.1" y1="116.84" x2="38.1" y2="109.22" width="0.1524" layer="91"/>
-<pinref part="IC4" gate="A1" pin="VI"/>
+<wire x1="104.14" y1="111.76" x2="215.9" y2="111.76" width="0.1524" layer="91"/>
+<junction x="104.14" y="111.76"/>
+<pinref part="IC1" gate="G$1" pin="VI"/>
+<pinref part="IC3" gate="A1" pin="VO"/>
 </segment>
 </net>
-<net name="N$3" class="0">
-<segment>
-<wire x1="5.08" y1="93.98" x2="5.08" y2="91.44" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="N$5" class="0">
-<segment>
-<pinref part="IC2" gate="A1" pin="VI"/>
-<wire x1="12.7" y1="109.22" x2="7.62" y2="109.22" width="0.1524" layer="91"/>
-<wire x1="7.62" y1="109.22" x2="7.62" y2="93.98" width="0.1524" layer="91"/>
-<pinref part="L3" gate="G$1" pin="2"/>
-<wire x1="7.62" y1="93.98" x2="0" y2="93.98" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="N$2" class="0">
+<net name="N$1" class="0">
 <segment>
 <pinref part="J2" gate="G$1" pin="2"/>
 <pinref part="J2" gate="G$1" pin="3"/>
