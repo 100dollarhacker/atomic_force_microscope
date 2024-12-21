@@ -17,6 +17,8 @@
 
 MD_AD9833	AD(DATA, CLK, FSYNC); // Arbitrary SPI pins
 
+int debug = 1;
+
 int pincontact = 8;
 int pincontact5v = 9;
 int contact;
@@ -58,27 +60,32 @@ public:
     AD.setFrequency(0, freq); //TODO::ES - do we need this?
   }
 
+
   void GetFreqDown()
   {
-    freq -= 1;
-    freq_resp res = GetFreqOnce(0, BASE_FREQ, BASE_FREQ );
+    BASE_FREQ -= 1;
+    setBaseFreq(BASE_FREQ);
+    PrintCurrentFreq();
   }
   void GetFreqDownTenth()
   {
-    freq -= 0.1;
-    freq_resp res = GetFreqOnce(0, BASE_FREQ, BASE_FREQ );
+    BASE_FREQ -= 0.1;
+    setBaseFreq(BASE_FREQ);
+    PrintCurrentFreq();
   }
 
   void GetFreqUp()
   {
-    freq += 1;
-    freq_resp res = GetFreqOnce(0, BASE_FREQ, BASE_FREQ );
+    BASE_FREQ += 1;
+    setBaseFreq(BASE_FREQ);
+    PrintCurrentFreq();
   }
 
  void GetFreqUpTenth()
   {
-    freq += 0.1;
-    freq_resp res = GetFreqOnce(0, BASE_FREQ, BASE_FREQ );
+    BASE_FREQ += 0.1;
+    setBaseFreq(BASE_FREQ);
+    PrintCurrentFreq();
   }
 
   void setPhase(int phase)
@@ -86,7 +93,7 @@ public:
       AD.setPhase(0,  phase);
   }
 
-  void setBaseFreq(int base_freq)
+  void setBaseFreq(float base_freq)
   {
       BASE_FREQ = (float)base_freq;
       AD.setFrequency(0, BASE_FREQ); 
@@ -94,91 +101,51 @@ public:
 
   void GetFreqRange()
   {
-      // const int RANGE = 50;//50;
-      const int RANGE = 100;//10;//50;
-      float delta=0;
-      // for (int i = 0 ; i < 2*RANGE ; i=i+25)
+      const int RANGE = 100;
       for (int i = 0 ; i < 2*RANGE ; i++)
-      // for (int i = 0 ; i < RANGE ; i++)
       {
-          // freq = BASE_FREQ + i ;
-          // freq = 40000.0 + i ;
+
           freq = BASE_FREQ - RANGE + i ;
-          // freq = 32462.0 - RANGE/10 + ((float)i)/10 ;
-          // freq = BASE_FREQ -RANGE/10 + i/10; // - 5 + i*0.1 ;
-          // freq_resp res = GetFreqOnce(delta, BASE_FREQ-RANGE, BASE_FREQ + RANGE);
-          freq_resp res = GetFreqOnce(delta, freq, freq, true);
-      }
-  }
+          AD.setFrequency(0, freq); 
 
-  freq_resp GetFreq()
-  {
-      freq_resp min_res;
-      min_res.result = 9999;
-      // freq = BASE_FREQ-2;
-      float delta = 0.1;
-      for (int i = 0 ; i < 20 ; i++)
-      {
-        // delay(100);
-        freq = BASE_FREQ - 1 + i * delta ;
-        freq_resp res = GetFreqOnce(delta, BASE_FREQ - 5, BASE_FREQ + 5);
-        if (res.result < min_res.result || COUNT_NUM - res.result < min_res.result)
-           min_res = res;
+          freq_resp res = GetFreqResponse();
       }
 
-      Serial.print("min avg  ");
-      Serial.print(min_res.result);
-
-      // Serial.print(x);
-      Serial.print("  @ freq: ");
-      Serial.println(min_res.freq);
-
-      return min_res;
+      // return to base freq once finished the tests
+      AD.setFrequency(0, BASE_FREQ); 
 
   }
-private:
-  freq_resp GetFreqOnce(float delta, float base_freq, float max_freq, bool print = 0)
+
+  void PrintCurrentFreq()
   {
-    freq += delta;
+      Serial.print("Base freq: ");
+      Serial.println(BASE_FREQ);
+  }
+
+  // Assumes correct frequency selected and used.
+  freq_resp GetFreqResponse()
+  {
     freq_resp fres;
-
-    AD.setFrequency(0, freq);
     
-    // if (freq > max_freq)
-    //    freq = base_freq ; //-7;
-    avg = 1;
-    // for (count =0, result = 0 ; count < 65535; count ++) 
-    for (int test = 0; test < TEST_NUM ; test++) {
     for (count =0, result = 0 ; count < COUNT_NUM; count ++) 
     {
-
-      // uint16_t x = (PINB & 0x2 )>> 1; 
-      // uint16_t x = PINB & 0b00100000 ; // OK on UNO 
       x =  (PINB & 0x01)  ;
       if (x > 0) 
         result += 1;
-      // result += x ;
-      // PORTB = (x >> 1);    
     }
-      avg += result;
+    
+    
+
+    if (debug)
+    {
+        Serial.print("# of high bits : ");
+        Serial.print(result);
+        Serial.print("   ");
+        Serial.print(COUNT_NUM-result);
+
+        Serial.print("  @ freq: ");
+        Serial.println(freq);
     }
-
-    avg = avg / TEST_NUM;
-if (print)
-{
-    Serial.print("# of high bits : ");
-    Serial.print(result);
-    Serial.print(" avg  ");
-    Serial.print(avg);
-    Serial.print("   ");
-    Serial.print(COUNT_NUM-avg);
-
-    // if (5535-avg < 2000) Serial.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<") ;
-
-    // Serial.print(x);
-    Serial.print("  @ freq: ");
-    Serial.println(freq);
-}
     fres.freq = freq;
     fres.result = result < COUNT_NUM - result ? result: COUNT_NUM - result;
     
@@ -186,10 +153,11 @@ if (print)
 
   }
 
+private:
+
   uint16_t count ;
   uint16_t result ;
   uint16_t x;
-  uint32_t avg;
 };
 
 DAC_AD5696* ad5696 = new DAC_AD5696();
@@ -347,8 +315,7 @@ public:
   }; // actually we need something more tricky here...
   void GetFreq()
   {
-    //  while (1)
-       freqs->GetFreq(); 
+      freqs->PrintCurrentFreq(); 
   }
 
   void setPhase(int phase)
@@ -357,7 +324,12 @@ public:
   }
   void setBaseFreq(int base_freq)
   {
-      freqs->setBaseFreq(base_freq);
+      freqs->setBaseFreq((float)base_freq);
+  }
+
+  void GetFreqResponse()
+  {
+      freqs->GetFreqResponse();
   }
 
   void GetFreqRange()
@@ -385,16 +357,12 @@ public:
       freqs->GetFreqUpTenth();
   }
 
-  void ReadLine()
-  {
-    
-  }
 
   void land(uint16_t steps)
   {
       XYZ_t xyz;
       // while (freqs->GetFreq().result < THRESHOLD) { 
-      for (int i =0 ; i < 10 & freqs->GetFreq().result < THRESHOLD; i++ )   {
+      for (int i =0 ; i < 10 & freqs->GetFreqResponse().result < THRESHOLD; i++ )   {
           delay(100);
           xyz = position->move(0, 0 , steps);
           Serial.print("Landing x: ");
@@ -529,6 +497,11 @@ void loop()
     else if (cmd == "freq")
     {
       scanner->GetFreq();
+    }
+    // get frequency response 
+    else if (cmd == "fr") 
+    {
+      scanner->GetFreqResponse();
     }
 
 
