@@ -88,7 +88,8 @@ public:
 
   void setBaseFreq(int base_freq)
   {
-      BASE_FREQ = base_freq;
+      BASE_FREQ = (float)base_freq;
+      AD.setFrequency(0, BASE_FREQ); 
   }
 
   void GetFreqRange()
@@ -444,7 +445,7 @@ void loop()
 
   String cmd = rtx->listen();
 	delay(100); // OTHER WISE LISTEN FAILS
-	int idx;
+	long idx;
 	bool boolean;
 
   // Just a silly check to see if Arduino has a pulse

@@ -86,7 +86,7 @@ String RTx::listen() {
 	Check <commandLine> for something of the form "<name> <number>"
 	If it is found, extract the <numer> and put it in <param>, and return true
 */
-bool CheckSingleParameter(String commandLine, String name, int &param, bool &ok, String errorMessage)
+bool CheckSingleParameter(String commandLine, String name, long &param, bool &ok, String errorMessage)
 {
 	//Serial.println(commandLine);
 	//Serial.println(name);
@@ -97,7 +97,7 @@ bool CheckSingleParameter(String commandLine, String name, int &param, bool &ok,
 		// setting
 		bool ok = false;
 		String part;
-		int val = 0;
+		long val = 0;
 		while (1)
 		{
 			int pos = commandLine.indexOf(' ', pos);

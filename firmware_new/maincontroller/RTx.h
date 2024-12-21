@@ -32,7 +32,7 @@ class RTx
 };
 
 static bool reply = true;
-bool CheckSingleParameter(String commandLine, String name, int &param, bool &ok, String errorMessage);
+bool CheckSingleParameter(String commandLine, String name, long &param, bool &ok, String errorMessage);
 
 
 
