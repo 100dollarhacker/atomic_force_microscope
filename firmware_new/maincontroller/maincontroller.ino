@@ -95,7 +95,7 @@ public:
 
   void setBaseFreq(float base_freq)
   {
-      BASE_FREQ = (float)base_freq;
+      BASE_FREQ = base_freq;
       AD.setFrequency(0, BASE_FREQ); 
   }
 
@@ -201,6 +201,8 @@ public:
     Serial.println(z_m);
 
   }
+
+  // Move x,y,z step relativly to latest position.
   XYZ_t move(int16_t x, int16_t y, int16_t z)
   {
 
@@ -236,9 +238,6 @@ public:
       z_m += z;
     }
 
-
-   
-   
     dac->X_left( x_m + z_m );
     dac->X_right( -x_m + z_m );
     
@@ -250,9 +249,10 @@ public:
     xyz.y = y_m;
     xyz.z = z_m;
 
-    return xyz;
-    
+    // Print our current position
+    print();
 
+    return xyz;
   }
 
   void reset()
@@ -322,7 +322,7 @@ public:
   {
       freqs->setPhase(phase);
   }
-  void setBaseFreq(int base_freq)
+  void setBaseFreq(long base_freq)
   {
       freqs->setBaseFreq((float)base_freq);
   }
@@ -361,19 +361,16 @@ public:
   void land(uint16_t steps)
   {
       XYZ_t xyz;
-      // while (freqs->GetFreq().result < THRESHOLD) { 
-      for (int i =0 ; i < 10 & freqs->GetFreqResponse().result < THRESHOLD; i++ )   {
-          delay(100);
+      for (int i = 0 ; i < 30 & freqs->GetFreqResponse().result < THRESHOLD; i++ )   
+      {
+          delay(100); // Let piezzoelectric disc respond. Not sure if it too much or not. 
           xyz = position->move(0, 0 , steps);
-          Serial.print("Landing x: ");
-          Serial.print(xyz.x);
-          Serial.print(" y: ");
-          Serial.print(xyz.y);
-          Serial.print(" z: ");
-          Serial.println(xyz.z);
-
-
       } 
+  }
+
+  void scan(uint16_t steps)
+  {
+
 
 
   }
@@ -382,7 +379,7 @@ public:
 private:
   Position* position;
   FreqSensor* freqs;
-  const uint16_t THRESHOLD = 80;
+  const uint16_t THRESHOLD = 100;
 
 };
 Scanner* scanner = new Scanner();
