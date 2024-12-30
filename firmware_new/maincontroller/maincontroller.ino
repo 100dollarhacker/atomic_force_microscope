@@ -26,6 +26,8 @@ int contact;
 float BASE_FREQ = 32462.0;//32770.8;//32750.3;
 float freq = BASE_FREQ;
 const uint16_t COUNT_NUM = 555;//55535;
+uint16_t THRESHOLD = 200;
+
 
 ///////////////////// FreqSensor end ///////////////////////////
 
@@ -102,16 +104,18 @@ public:
   void GetFreqRange()
   {
       const int RANGE = 100;
+      float BASE_FREQ_PREV = BASE_FREQ;
       for (int i = 0 ; i < 2*RANGE ; i++)
       {
 
-          freq = BASE_FREQ - RANGE + i ;
-          AD.setFrequency(0, freq); 
+          BASE_FREQ = BASE_FREQ_PREV - RANGE + i ;
+          AD.setFrequency(0, BASE_FREQ); 
 
           freq_resp res = GetFreqResponse();
       }
 
       // return to base freq once finished the tests
+      BASE_FREQ = BASE_FREQ_PREV;
       AD.setFrequency(0, BASE_FREQ); 
 
   }
@@ -144,9 +148,9 @@ public:
         Serial.print(COUNT_NUM-result);
 
         Serial.print("  @ freq: ");
-        Serial.println(freq);
+        Serial.println(BASE_FREQ);
     }
-    fres.freq = freq;
+    fres.freq = BASE_FREQ;
     fres.result = result < COUNT_NUM - result ? result: COUNT_NUM - result;
     
     return fres;
@@ -361,10 +365,20 @@ public:
   void land(uint16_t steps)
   {
       XYZ_t xyz;
-      for (int i = 0 ; i < 30 & freqs->GetFreqResponse().result < THRESHOLD; i++ )   
+      for (int i = 0 ; i < 100 & freqs->GetFreqResponse().result < THRESHOLD; i++ )   
       {
           delay(100); // Let piezzoelectric disc respond. Not sure if it too much or not. 
           xyz = position->move(0, 0 , steps);
+      } 
+  }
+
+    void lift(uint16_t steps)
+  {
+      XYZ_t xyz;
+      for (int i = 0 ; i < 300 & freqs->GetFreqResponse().result > THRESHOLD; i++ )   
+      {
+          // delay(100); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+          xyz = position->move(0, 0 , -steps);
       } 
   }
 
@@ -379,7 +393,6 @@ public:
 private:
   Position* position;
   FreqSensor* freqs;
-  const uint16_t THRESHOLD = 100;
 
 };
 Scanner* scanner = new Scanner();
@@ -501,6 +514,13 @@ void loop()
       scanner->GetFreqResponse();
     }
 
+    else if (CheckSingleParameter(cmd, "thr", idx, boolean, ""))
+    {
+      THRESHOLD = idx;
+      Serial.print("Setting THRESOLD to ");
+      Serial.println(idx);
+    }
+
 
 
     // if command scaninit X steps
@@ -512,6 +532,14 @@ void loop()
       Serial.print("Start to softly land with steps of ");
       Serial.println(idx);
       scanner->land(idx);
+
+    }
+
+      else if (CheckSingleParameter(cmd, "lift", idx, boolean, "land failed"))
+    {
+      Serial.print("Start to lift with steps of ");
+      Serial.println(idx);
+      scanner->lift(idx);
 
     }
 
