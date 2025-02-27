@@ -101,9 +101,60 @@ public:
       AD.setFrequency(0, BASE_FREQ); 
   }
 
+  float MIN(float a, float b) {return (a<b)?a:b;}
+
   void GetFreqRange()
   {
       const int RANGE = 100;
+      float BASE_FREQ_PREV = BASE_FREQ;
+      freq_resp min = {500,500};
+
+      for (int i = 0 ; i < 2*RANGE ; i++)
+      {
+
+          BASE_FREQ = BASE_FREQ_PREV - RANGE + i ;
+          AD.setFrequency(0, BASE_FREQ); 
+
+          freq_resp res = GetFreqResponse();
+          float min_res = MIN(res.result , COUNT_NUM - min.result);
+          if (min.result > res.result ) {
+            min = res;
+          }
+      }
+
+      Serial.print("Min Value: ");
+      Serial.print(min.result);
+      Serial.print("   Min freq: ");
+      Serial.println(min.freq);
+    
+
+      // return to base freq once finished the tests
+      BASE_FREQ = BASE_FREQ_PREV;
+      AD.setFrequency(0, BASE_FREQ); 
+
+  }
+
+  void GetMFreqRange()
+  {
+      const int RANGE = 30;
+      float BASE_FREQ_PREV = BASE_FREQ;
+      for (int i = 0 ; i < 2*RANGE ; i++)
+      {
+
+          BASE_FREQ = BASE_FREQ_PREV + (float)(-RANGE + i)/10 ;
+          AD.setFrequency(0, BASE_FREQ); 
+
+          freq_resp res = GetFreqResponse();
+      }
+
+      // return to base freq once finished the tests
+      BASE_FREQ = BASE_FREQ_PREV;
+      AD.setFrequency(0, BASE_FREQ); 
+
+  }
+  void GetSFreqRange()
+  {
+      const int RANGE = 10;
       float BASE_FREQ_PREV = BASE_FREQ;
       for (int i = 0 ; i < 2*RANGE ; i++)
       {
@@ -119,7 +170,6 @@ public:
       AD.setFrequency(0, BASE_FREQ); 
 
   }
-
   void PrintCurrentFreq()
   {
       Serial.print("Base freq: ");
@@ -341,6 +391,17 @@ public:
       freqs->GetFreqRange();
   }
 
+
+  void GetSFreqRange()
+  {
+      freqs->GetSFreqRange();
+  }
+
+  void GetMFreqRange()
+  {
+      freqs->GetMFreqRange();
+  }
+
  void GetFreqDown()
   {
       freqs->GetFreqDown();
@@ -362,32 +423,223 @@ public:
   }
 
 
+  void lands(uint16_t steps)
+  {
+      XYZ_t xyz;
+      for (int i = 0 ; i < 100 & freqs->GetFreqResponse().result < THRESHOLD; i++ )   
+      {
+          delay(5000UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+          xyz = position->move(0, 0 , steps);
+      } 
+  }
   void land(uint16_t steps)
   {
       XYZ_t xyz;
       for (int i = 0 ; i < 100 & freqs->GetFreqResponse().result < THRESHOLD; i++ )   
       {
-          delay(100); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+          delay(1000); // Let piezzoelectric disc respond. Not sure if it too much or not. 
           xyz = position->move(0, 0 , steps);
       } 
   }
 
-    void lift(uint16_t steps)
+  XYZ_t eland(uint16_t steps, uint16_t threshold)
+  {
+      XYZ_t xyz = {0,0,0};
+      while (freqs->GetFreqResponse().result < threshold & xyz.z < 32000) {
+          delay(1000UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+          xyz = position->move(0, 0 , steps);
+      } 
+
+      return xyz;
+  }
+
+  void lifts(uint16_t steps)
   {
       XYZ_t xyz;
       for (int i = 0 ; i < 300 & freqs->GetFreqResponse().result > THRESHOLD; i++ )   
       {
-          // delay(100); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+          delay(5000UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
           xyz = position->move(0, 0 , -steps);
       } 
   }
 
-  void scan(uint16_t steps)
+  void lift(uint16_t steps)
   {
-
-
-
+      XYZ_t xyz;
+      for (int i = 0 ; i < 300 & freqs->GetFreqResponse().result > THRESHOLD; i++ )   
+      {
+          delay(1000); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+          xyz = position->move(0, 0 , -steps);
+      } 
   }
+
+  XYZ_t elift(uint16_t steps)
+  {
+      XYZ_t xyz = {0,0,0};
+      while(freqs->GetFreqResponse().result > THRESHOLD & xyz.z > -32000)   
+      {
+          delay(1000UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+          xyz = position->move(0, 0 , -steps);
+
+      } 
+
+      return xyz; 
+  }
+
+  void scan1(uint16_t steps)
+  {
+      XYZ_t xyz;
+      int THRESHOLD1 = 100;
+
+      for (int i = 0 ; i < 6 ; i++) {
+
+          bool flag = true;
+          while (flag) {
+            // land 
+            xyz = eland(steps, THRESHOLD1);
+
+            if (xyz.z == 32000)
+               break;
+
+
+            // check response three times to be sure it's not a noise
+            flag = freqs->GetFreqResponse().result < THRESHOLD1;
+            flag |= freqs->GetFreqResponse().result < THRESHOLD1;
+            flag |= freqs->GetFreqResponse().result < THRESHOLD1;
+          }
+
+          // print current location
+          position->print();
+          Serial.println("Landed >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+      }
+    }
+
+  void scan2(uint16_t steps)
+  {
+      XYZ_t xyz;
+
+      for (int i = 0 ; i < 6 ; i++) {
+
+          bool flag = true;
+          while (flag) {
+            // land 
+            xyz = eland(steps, THRESHOLD);
+
+            if (xyz.z == 32000)
+               break;
+
+
+            // check response three times to be sure it's not a noise
+            flag = freqs->GetFreqResponse().result < THRESHOLD;
+            flag |= freqs->GetFreqResponse().result < THRESHOLD;
+            flag |= freqs->GetFreqResponse().result < THRESHOLD;
+          }
+
+          // print current location
+          position->print();
+          Serial.println("Landed >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+
+          if (flag = freqs->GetFreqResponse().result < THRESHOLD) {
+              Serial.println(">>>>>> Found nothing breaking ... ");
+              break;
+          }
+
+          flag = true;
+          while (flag) {
+            // lift 
+            xyz = elift(steps);
+
+            if (xyz.z == -32000)
+               break;
+
+
+            // check response three times to be sure it's not a noise
+            flag = freqs->GetFreqResponse().result > THRESHOLD;
+            flag |= freqs->GetFreqResponse().result > THRESHOLD;
+            flag |= freqs->GetFreqResponse().result > THRESHOLD;
+          }
+
+          // print current location
+          Serial.println("Lifted >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+
+      }
+  }
+
+  // Make a scan over X-axis. Assuming 'landed' the tip is in kind of equalibrium going up you touch the sample going down you disconnect
+  void scanX2(uint16_t steps)
+  {
+      XYZ_t xyz;
+
+
+      Serial.println("Scanning X: ");
+      delay(1000UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+
+      xyz = position->move(-steps*10, 0 , 0);
+
+      for (int i = 0 ; i < 10 ; i++) {
+
+          int fr = freqs->GetFreqResponse().result ;
+
+
+          Serial.print(fr);
+          Serial.print("|");
+
+
+
+          xyz = position->move(steps, 0 , 0);
+
+          delay(100UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+
+      }
+  }
+
+
+  // Make a scan over X-axis. Assuming 'landed' the tip is in kind of equalibrium going up you touch the sample going down you disconnect
+  void scanX(uint16_t steps)
+  {
+      XYZ_t xyz;
+
+
+      Serial.println("Scanning X: ");
+
+
+      for (int i = 0 ; i < 10 ; i++) {
+
+          int fr = freqs->GetFreqResponse().result ;
+
+
+          Serial.print(fr);
+          Serial.print("|");
+
+
+
+          xyz = position->move(steps, 0 , 0);
+
+          delay(100UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+
+      }
+
+      Serial.println("Scanning X(backwards) : ");
+
+      // go back to where we started just a check if this is noise or not
+      for (int i = 0 ; i < 10 ; i++) {
+
+          int fr = freqs->GetFreqResponse().result ;
+ 
+
+
+          Serial.print(fr);
+          Serial.print("|");
+
+
+
+          xyz = position->move(-steps, 0 , 0);
+
+          delay(100UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+
+      }
+  }
+      
 
 
 private:
@@ -401,7 +653,7 @@ void setup()
 {
     //start serial communication
     Serial.begin(BAUDRATE);
-    Serial.println("AFMv0.1 is up and running ...");
+    Serial.println("AFMv0.2 is up and running ...");
     // unsigned char i2csetup = ADDAC::Setup(LDAC);
 	  // Serial.println(i2csetup == 1 ? "success!" : "failed!");
 
@@ -453,13 +705,21 @@ void loop()
     Serial.println("  steps");
     scanner->up(idx);
 	}
-  else if (CheckSingleParameter(cmd, "s", idx, boolean, "swing failed"))
+
+  else if (CheckSingleParameter(cmd, "x", idx, boolean, "move left"))
 	{
-		Serial.print("Start to swing up/down by  ");
+		Serial.print("Going left by  ");
 		Serial.print(idx);
     Serial.println("  steps");
-    scanner->swing(idx);
+    scanner->up(idx);
 	}
+  // else if (CheckSingleParameter(cmd, "s", idx, boolean, "swing failed"))
+	// {
+	// 	Serial.print("Start to swing up/down by  ");
+	// 	Serial.print(idx);
+  //   Serial.println("  steps");
+  //   scanner->swing(idx);
+	// }
 
 
 
@@ -482,6 +742,18 @@ void loop()
     else if (cmd == "range")
     {
       scanner->GetFreqRange();
+    }
+
+      // scan for operation frequency step of 1Hz 
+    else if (cmd == "srange")
+    {
+      scanner->GetSFreqRange();
+    }
+
+         // scan for operation frequency step of 1Hz 
+    else if (cmd == "msrange")
+    {
+      scanner->GetMFreqRange();
     }
 
     else if (cmd == "fd")
@@ -535,6 +807,14 @@ void loop()
 
     }
 
+    else if (CheckSingleParameter(cmd, "lands", idx, boolean, "land failed"))
+    {
+      Serial.print("Start to softly land with steps of (delay of 1s)");
+      Serial.println(idx);
+      scanner->lands(idx);
+
+    }
+
       else if (CheckSingleParameter(cmd, "lift", idx, boolean, "land failed"))
     {
       Serial.print("Start to lift with steps of ");
@@ -542,5 +822,57 @@ void loop()
       scanner->lift(idx);
 
     }
+
+    else if (CheckSingleParameter(cmd, "lifts", idx, boolean, "land failed"))
+    {
+      delay(1000);
+      Serial.print("Start to lifts with steps of ");
+      Serial.println(idx);
+      scanner->lifts(idx);
+
+    }
+
+
+    // else if (CheckSingleParameter(cmd, "scan1", idx, boolean, "scan1 failed"))
+    // {
+    //   Serial.print("Start to scan1 with steps of ");
+    //   Serial.println(idx);
+
+
+    //   scanner->scan1(idx);
+
+    // }
+
+    // else if (CheckSingleParameter(cmd, "scan2", idx, boolean, "scan failed"))
+    // {
+    //   Serial.print("Start to scan with steps of ");
+    //   Serial.println(idx);
+
+
+    //   scanner->scan2(idx);
+
+    // }
+
+
+    else if (CheckSingleParameter(cmd, "scanx", idx, boolean, "scan failed"))
+    {
+      Serial.print("Start to scan with steps of ");
+      Serial.println(idx);
+
+
+      scanner->scanX(idx);
+
+    }
+
+    // else if (CheckSingleParameter(cmd, "scanx2", idx, boolean, "scan failed"))
+    // {
+    //   Serial.print("Start to scan with steps of ");
+    //   Serial.println(idx);
+
+
+    //   scanner->scanX2(idx);
+
+    // }
+
 
 }
