@@ -2,6 +2,14 @@
 #include "DAC_AD5696.h"
 #include <MD_AD9833.h>
 #include <SPI.h>
+#include <Stepper.h>                    //load library
+
+#define stepsPerRevolution 2048                     //establish number of steps
+
+// Stepper stepper(stepsPerRevolution, 8, 10, 9, 11);
+// Stepper stepper(stepsPerRevolution, 9, 11, 10, 12 );
+Stepper stepper(stepsPerRevolution, 10, 12, 11, 13 );
+
 
 
 ////////////////////// FreqSensor //////////////////////
@@ -48,6 +56,27 @@ struct XYZ_t
 };
 
 RTx* rtx = new RTx();
+
+class MicroPosition
+{
+public:
+  MicroPosition()
+  {
+    stepper.setSpeed(10);                   //set speed of motor, lets use minimal speed we are not in hurrry.
+
+  }
+
+  void Down(int steps)
+  {
+    stepper.step(steps);                      //tell stepper motor to step
+  }
+
+  void Up(int steps)
+  {
+    stepper.step(-steps);                      //negative is other direction 
+  }
+
+};
 
 class FreqSensor
 {
@@ -219,8 +248,18 @@ DAC_AD5696* ad5696 = new DAC_AD5696();
 class DAC
 {
 public:
-  DAC() {
+  DAC() {}
+
+  void ring(int channel)
+  {
+    for (int i = 0 ; i < 1000; i++)
+    {
+      ad5696->SetVoltage(channel,  30000);
+      delay(1);
+      ad5696->SetVoltage(channel,  -30000);
+
     }
+  }
 
   void X_left( uint16_t posttion ){ad5696->SetVoltage(X_LEFT_CHANNEL,  posttion);}
   void X_right( uint16_t posttion ){ad5696->SetVoltage(X_RIGHT_CHANNEL,  posttion);}
@@ -255,6 +294,8 @@ public:
     Serial.println(z_m);
 
   }
+
+  void ring(int channel) {dac->ring(channel);}
 
   // Move x,y,z step relativly to latest position.
   XYZ_t move(int16_t x, int16_t y, int16_t z)
@@ -331,10 +372,14 @@ private:
 class Scanner
 {
 public:
-  Scanner(){position = new Position(); freqs = new FreqSensor();};
+  Scanner(){position = new Position(); freqs = new FreqSensor(); mp = new MicroPosition();};
   void reset(){delete position; position = new Position();}
+  void ring(int channel) {position->ring(channel);}
   void down(uint16_t steps) {Serial.println("Scanner going Down"); position->move(0, 0 , -steps); }//freqs->GetFreq();};
   void up(uint16_t steps) {Serial.println("Scanner going Up");position->move( 0 , 0, steps); }//freqs->GetFreq();};
+  void MPDown(uint16_t steps) {mp->Down(steps);};
+  void MPUp(uint16_t steps) {mp->Up(steps);};
+  
   void swing(uint16_t steps) {
     Serial.println("Scanner Swing");
 
@@ -381,7 +426,7 @@ public:
       freqs->setBaseFreq((float)base_freq);
   }
 
-  void GetFreqResponse()
+  freq_resp GetFreqResponse()
   {
       freqs->GetFreqResponse();
   }
@@ -645,6 +690,7 @@ public:
 private:
   Position* position;
   FreqSensor* freqs;
+  MicroPosition* mp;
 
 };
 Scanner* scanner = new Scanner();
@@ -666,8 +712,6 @@ void setup()
 	  // turn internal reference off
   	ad5696->InternalVoltageReference(AD569X_INT_REF_OFF);
  
-    
-    
 }
 
 void loop()
@@ -863,6 +907,44 @@ void loop()
       scanner->scanX(idx);
 
     }
+
+    else if (CheckSingleParameter(cmd, "md", idx, boolean, "down failed"))
+    {
+      Serial.print("Going MICRO down by  ");
+      Serial.print(idx);
+      Serial.println("  steps");
+      scanner->MPDown(idx);
+    }
+    else if (CheckSingleParameter(cmd, "mu", idx, boolean, "down failed"))
+    {
+      Serial.print("Going MICRO up by  ");
+      Serial.print(idx);
+      Serial.println("  steps");
+      scanner->MPUp(idx);
+    }
+
+    else if (CheckSingleParameter(cmd, "ml", idx, boolean, "down failed"))
+    {
+      Serial.print("Going MICRO LAND by  ");
+      Serial.print(idx);
+      Serial.println("  steps");
+      
+
+      while(scanner->GetFreqResponse().result < 200) 
+      {
+        scanner->MPUp(idx);
+        delay(1000);
+      }
+    }
+
+    else if (CheckSingleParameter(cmd, "ring", idx, boolean, "ring failed"))
+    {
+      Serial.print("Ringing channel ");
+      Serial.print(idx);
+      Serial.println(" ");
+      scanner->ring(idx);
+    }
+
 
     // else if (CheckSingleParameter(cmd, "scanx2", idx, boolean, "scan failed"))
     // {
