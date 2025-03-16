@@ -34,7 +34,8 @@ int contact;
 float BASE_FREQ = 32462.0;//32770.8;//32750.3;
 float freq = BASE_FREQ;
 const uint16_t COUNT_NUM = 555;//55535;
-uint16_t THRESHOLD = 200;
+uint16_t THRESHOLD = 100;
+const uint16_t MAX_Z_VALUE = 32000;
 
 
 ///////////////////// FreqSensor end ///////////////////////////
@@ -44,7 +45,7 @@ uint16_t THRESHOLD = 200;
 
 struct freq_resp
 {
-  int result;
+  uint16_t result;
   float freq;
 };
 
@@ -134,7 +135,7 @@ public:
 
   void GetFreqRange()
   {
-      const int RANGE = 100;
+      const int RANGE = 200;
       float BASE_FREQ_PREV = BASE_FREQ;
       freq_resp min = {500,500};
 
@@ -231,7 +232,7 @@ public:
     }
     fres.freq = BASE_FREQ;
     fres.result = result < COUNT_NUM - result ? result: COUNT_NUM - result;
-    
+
     return fres;
 
   }
@@ -254,9 +255,10 @@ public:
   {
     for (int i = 0 ; i < 1000; i++)
     {
-      ad5696->SetVoltage(channel,  30000);
+      ad5696->SetVoltage(channel,  32000);
       delay(1);
-      ad5696->SetVoltage(channel,  -30000);
+      ad5696->SetVoltage(channel,  -32000);
+      delay(1);
 
     }
   }
@@ -345,7 +347,7 @@ public:
     xyz.z = z_m;
 
     // Print our current position
-    print();
+    // print();
 
     return xyz;
   }
@@ -375,7 +377,13 @@ public:
   Scanner(){position = new Position(); freqs = new FreqSensor(); mp = new MicroPosition();};
   void reset(){delete position; position = new Position();}
   void ring(int channel) {position->ring(channel);}
-  void down(uint16_t steps) {Serial.println("Scanner going Down"); position->move(0, 0 , -steps); }//freqs->GetFreq();};
+  void down(uint16_t steps) 
+  {
+    Serial.println("Scanner going Down"); 
+    position->move(0, 0 , -steps); 
+    position->print();
+
+  }//freqs->GetFreq();};
   void up(uint16_t steps) {Serial.println("Scanner going Up");position->move( 0 , 0, steps); }//freqs->GetFreq();};
   void MPDown(uint16_t steps) {mp->Down(steps);};
   void MPUp(uint16_t steps) {mp->Up(steps);};
@@ -428,7 +436,7 @@ public:
 
   freq_resp GetFreqResponse()
   {
-      freqs->GetFreqResponse();
+      return freqs->GetFreqResponse();
   }
 
   void GetFreqRange()
@@ -480,11 +488,15 @@ public:
   void land(uint16_t steps)
   {
       XYZ_t xyz;
-      for (int i = 0 ; i < 100 & freqs->GetFreqResponse().result < THRESHOLD; i++ )   
+      xyz.z = 0;
+      for (int i = 0 ; i < 100 && freqs->GetFreqResponse().result < THRESHOLD && xyz.z < MAX_Z_VALUE; i++ )   
       {
           delay(1000); // Let piezzoelectric disc respond. Not sure if it too much or not. 
           xyz = position->move(0, 0 , steps);
       } 
+      Serial.println("Landed at position ");
+      Serial.print(xyz.z);
+      Serial.println("");
   }
 
   XYZ_t eland(uint16_t steps, uint16_t threshold)
@@ -623,7 +635,7 @@ public:
 
       for (int i = 0 ; i < 10 ; i++) {
 
-          int fr = freqs->GetFreqResponse().result ;
+          uint16_t fr = freqs->GetFreqResponse().result ;
 
 
           Serial.print(fr);
@@ -647,14 +659,14 @@ public:
 
       Serial.println("Scanning X: ");
 
-
-      for (int i = 0 ; i < 10 ; i++) {
+      debug = 0 ;
+      for (int i = 0 ; i < 100 ; i++) {
 
           int fr = freqs->GetFreqResponse().result ;
 
 
           Serial.print(fr);
-          Serial.print("|");
+          Serial.print(",");
 
 
 
@@ -667,14 +679,14 @@ public:
       Serial.println("Scanning X(backwards) : ");
 
       // go back to where we started just a check if this is noise or not
-      for (int i = 0 ; i < 10 ; i++) {
+      for (int i = 0 ; i < 100 ; i++) {
 
           int fr = freqs->GetFreqResponse().result ;
  
 
 
           Serial.print(fr);
-          Serial.print("|");
+          Serial.print(",");
 
 
 
@@ -683,6 +695,9 @@ public:
           delay(100UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
       }
+
+      debug = 1 ;
+
   }
       
 
@@ -929,11 +944,13 @@ void loop()
       Serial.print(idx);
       Serial.println("  steps");
       
+      freq_resp fr = scanner->GetFreqResponse();
 
-      while(scanner->GetFreqResponse().result < 200) 
+      while(fr.result < THRESHOLD) 
       {
-        scanner->MPUp(idx);
-        delay(1000);
+        scanner->MPDown(idx);
+        delay(10);
+        fr = scanner->GetFreqResponse();
       }
     }
 
