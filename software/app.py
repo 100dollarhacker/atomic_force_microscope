@@ -29,109 +29,28 @@ ImagePanel.pack()
 
 # ----------------------------------- image panel 
 
-#fig = Figure(figsize=(14, 14), dpi=100)
-#ax = fig.add_subplot(111)
 
-image_datax = []
-image_datay = []
-image_dataz = []
-for i in range(1,10):
-    for j in range(1,10):
-        #print(f" {i},{j} ")
-        image_datax.append(j)
-        image_datay.append(i)
-        image_dataz.append(i+j)
-#image_data = [[[0.1, 0.2, 0.3],   # x1, y1, z1  # first row
-#        [0.4, 0.5, 0.6],   # x2, y2, z2
-#        [0.7, 0.8, 0.9]],  # x3, y3, z3
-#
-#       [[0.2, 0.2, 0.3],   # x1, y1, z1  # second row
-#        [0.4, 0.5, 0.6],   # x2, y2, z2
-#        [0.7, 0.8, 0.9]]]
-
-#image_data = np.array(image_data1)
-#image_data.shape()
-
-#print(f" data: {type(image_data)}")
-#image_data = np.random.rand(100, 100)
-#image_data = [image_datax, image_datay, image_dataz]
-
-
-#x_list = np.array(X_COORDINATE)
-#z_list = np.array(Z_COORDINATE)
-#C_I_list = np.array(C_I)
-
-
-
-#print(f" data: {(image_data)}")
-# Display the image on the axes
-#im = ax.imshow(image_data, cmap='viridis')
-#ax.imshow([[2,4,1,6a]])
-#
-#ax.plot([[1, 2, 3, 4], [5, 6, 7, 8], [3,3,3,3]])
-
-#ax.colorbar(lable='Values')
-#plt.imshow(data, cmap='viridis', interpolation='nearest')
-
-# Add a colorbar
-#plt.colorbar(label='Values')
-
-#from scipy.interpolate import interp2d
-#f = interp2d(x_list, z_list, C_I_list, kind="linear")
-
-#x_coords = np.arange(min(x_list), max(x_list) + 1)
-#z_coords = np.arange(min(z_list), max(z_list) + 1)
-#c_i = f(x_coords, z_coords)
-
-fig = plt.figure(figsize=(10, 10), dpi=70)
+fig = plt.figure(figsize=(12, 10), dpi=70)
 ax = fig.add_subplot(111)
 
 x = range(1,101)# [1,3,5,7,8]
 y = range(1,101) #[0.55,0.65,0.75,0.85,0.95]
 
 x, y = np.meshgrid(x, y)
-#intensity = range(1,101)
-#z=range(1,100*100+1)
 z=[0]*10000
 intensity = np.array(z).reshape(100, 100)
-#intensity = np.random.random(size=(100,100))
 intensity[10][10] = 34
 intensity[30][20] = 134
-print(f"{type(intensity)}")
 
 plt.pcolormesh(x, y, intensity, vmin=0, vmax = 270)
-#ax.plot(x, y, intensity)
-#ax.plot.colorbar()  # need a colorbar to show the intensity scale
-#plt.show()
+plt.colorbar()  # need a colorbar to show the intensity scale
+#ddplt.show()
 
 
 canvas = FigureCanvasTkAgg(fig, master=ImagePanel)
 canvas_widget = canvas.get_tk_widget()
 canvas_widget.pack()
 canvas.draw()
-
-
-
-
-#fig = Figure(figsize=(14, 14), dpi=100)
-#ax = fig.add_subplot(111)
-
-#x = range(1,101)# [1,3,5,7,8]
-#y = range(1,101) #[0.55,0.65,0.75,0.85,0.95]
-
-#x, y = np.meshgrid(x, y)
-##intensity = range(1,101)
-##z=range(1,100*100+1)
-#z=[0]*10000
-#intensity = np.array(z).reshape(100, 100)
-##intensity = np.random.random(size=(100,100))
-#intensity[10][10] = 34
-#intensity[30][20] = 134
-#print(f"{type(intensity)}")
-
-#plt.pcolormesh(x, y, intensity, vmin=0, vmax = 270)
-#plt.colorbar()  # need a colorbar to show the intensity scale
-#plt.show()
 
 #----------------------------------- cantrol --------
 
