@@ -8,10 +8,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
+font1=('Times 24 normal')
+
 
 
 window = Tk()
-
+window.title("(ugly) AFM control GUI")
 
 ControlPanel = ttk.Frame(master=window, relief=tk.GROOVE, borderwidth=5)
 ControlPanel.pack(side=tk.LEFT)
@@ -61,6 +63,22 @@ eject.pack()
 approach = ttk.Button(ControlPanel, text="Approach")
 approach.pack()
 
+best_freq = ttk.Button(ControlPanel, text="GetFreq")
+best_freq.pack()
+
+
+sb2_i=tk.DoubleVar(value=32765)
+sb2 = tk.Spinbox(ControlPanel, from_= 0.0, to = 99999,width=7, increment=0.1,
+    textvariable=sb2_i,font=font1)
+
+
+def entry_changed(*args):
+    """Callback function executed when the Entry content changes."""
+    print("Entry content changed:", sb2_i.get())
+
+
+sb2_i.trace_add("write", entry_changed)
+sb2.pack()
 #----------------------------------- nano ------------
 
 
@@ -79,7 +97,19 @@ sqroot.grid(row=0, column=2, padx=2, pady=2, sticky="nw")
 sqroot = ttk.Button(NanoPanel2, text="↓")
 sqroot.grid(row=2, column=2, padx=2, pady=2, sticky="nw")
 
+def set_nano_steps(value):
+    print("Nano steps:", selected_option.get())
 
+options = ["1000", "100", "10", "1"]
+
+selected_option = tk.StringVar()
+dropdown = ttk.Combobox(NanoPanel, textvariable=selected_option, values=options)
+
+
+dropdown.bind('<<ComboboxSelected>>', set_nano_steps)
+
+dropdown.current(0)
+dropdown.pack(pady=20)
 #----------------------------------- micro ------------
 
 MicroPanel1 = tk.Frame(master=MicroPanel, relief=FLAT, borderwidth=5)
@@ -96,5 +126,21 @@ sqroot.grid(row=0, column=2, padx=2, pady=2, sticky="nw")
 
 sqroot = ttk.Button(MicroPanel2, text="↓")
 sqroot.grid(row=2, column=2, padx=2, pady=2, sticky="nw")
+
+def set_micro_steps(value):
+    print("Micro steps:", selected_option.get())
+
+options_micro = ["1000", "100", "10", "1"]
+
+selected_option_micro = tk.StringVar()
+dropdown_micro = ttk.Combobox(MicroPanel, textvariable=selected_option, values=options)
+
+
+dropdown_micro.bind('<<ComboboxSelected>>', set_micro_steps)
+
+dropdown_micro.current(0)
+dropdown_micro.pack(pady=20)
+
+
 
 window.mainloop()
