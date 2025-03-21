@@ -11,6 +11,11 @@ from matplotlib.figure import Figure
 import numpy as np
 import matplotlib.pyplot as plt
 
+import time
+import threading
+
+from threading import Thread, Event
+
 
 font1=('Times 24 normal')
 
@@ -97,19 +102,31 @@ UsbSubPanel.pack()
 
 
 
-#----------------------------------- Caniliver --------
-
-def freq_resp():
-    message = "fr"
-    ser.write(message.encode('utf-8'))
-    data = ser.readline().decode('utf-8').strip()
-    print(f"Freq. response is: {data}")
-
-
+#----------------------------------- Cantiliver --------
 
 
 label = ttk.Label(master=ControlPanel,text="Cantiliver")
 label.pack()
+
+
+
+ThresholdSubPanel = ttk.Frame(master=ControlPanel, relief=tk.GROOVE, borderwidth=5)
+
+thr_label = ttk.Label(master=ThresholdSubPanel,text="Threshold:")
+thr_label.pack()
+
+user_thr_val=tk.IntVar(value=200)
+thrSpinBox = tk.Spinbox(ThresholdSubPanel, from_= 0, to = 500,width=7, increment=1,
+    textvariable=user_thr_val,font=font1)
+
+def thr_changed(*args):
+   serial_command("thr "+str(user_thr_val.get())    )
+
+user_thr_val.trace_add("write", thr_changed)
+thrSpinBox.pack()
+
+ThresholdSubPanel.pack()
+
 
 FreqSubPanel = ttk.Frame(master=ControlPanel, relief=tk.GROOVE, borderwidth=5)
 
@@ -185,6 +202,12 @@ finefreq.pack()
 
 
 
+def freq_resp():
+    serial_command("fr")
+    # message = "fr"
+    # ser.write(message.encode('utf-8'))
+    # data = ser.readline().decode('utf-8').strip()
+    # print(f"Freq. response is: {data}")
 
 
 best_freq = ttk.Button(ControlPanel, text="FreqResponse", command = freq_resp)
@@ -209,8 +232,8 @@ sqroot = ttk.Button(MicroPanel2, text="↓")
 sqroot.grid(row=2, column=2, padx=2, pady=2, sticky="nw")
 
 
-def set_micro_steps(value):
-    print("Micro steps:", selected_option.get())
+def set_micro_steps():
+    print("Micro steps:", options_micro.get())
 
 options_micro = ["1000", "100", "10", "1"]
 
@@ -223,10 +246,19 @@ dropdown_micro.bind('<<ComboboxSelected>>', set_micro_steps)
 dropdown_micro.current(2)
 dropdown_micro.pack(pady=20)
 
-eject = ttk.Button(MicroPanel, text="Eject")
+def eject_micro():
+    print("Ejecting ... ")
+    serial_command("mu 3000")
+
+eject = ttk.Button(MicroPanel, text="Eject", command=eject_micro)
 eject.pack()
 
-approach = ttk.Button(MicroPanel, text="Approach")
+
+def approach_micro():
+    print("Approaching... ")
+    serial_command("ml "+selected_option_micro.get())
+
+approach = ttk.Button(MicroPanel, text="Approach", command=approach_micro)
 approach.pack()
 
 
@@ -270,6 +302,74 @@ dropdown.pack(pady=20)
 
 land = ttk.Button(NanoPanel, text="Land")
 land.pack()
+
+
+
+
+
+
+
+
+
+
+ScanSubPanel = ttk.Frame(master=NanoPanel, relief=tk.GROOVE, borderwidth=5)
+
+
+shared_bool = Event()
+
+scan_flag = False
+
+
+def task(shared_bool):
+    print("In task")
+    while shared_bool.is_set():
+        time.sleep(1)
+        print(".")
+    print("Scan stopped --- ")
+
+
+def start_scan():
+    global shared_bool
+    shared_bool.set()
+    print(f"Starting scan...{dir(shared_bool)}")
+
+    thread1 = threading.Thread(target=task, args=(shared_bool,))
+    thread1.start()
+
+
+
+
+
+def stop_scan():
+    global scan_flag
+    shared_bool.clear()
+
+    print("Stopping scan")
+
+start = ttk.Button(ScanSubPanel, text="Start Scan", command=start_scan)
+start.pack()
+
+stop = ttk.Button(ScanSubPanel, text="Stop Scan", command=stop_scan)
+stop.pack()
+
+
+
+ScanSubPanel.pack()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ----------------------------------- image panel
