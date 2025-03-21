@@ -168,6 +168,8 @@ public:
   {
       const int RANGE = 30;
       float BASE_FREQ_PREV = BASE_FREQ;
+      freq_resp min = {500,500};
+
       for (int i = 0 ; i < 2*RANGE ; i++)
       {
 
@@ -175,7 +177,18 @@ public:
           AD.setFrequency(0, BASE_FREQ); 
 
           freq_resp res = GetFreqResponse();
+
+          float min_res = MIN(res.result , COUNT_NUM - min.result);
+          if (min.result > res.result ) {
+            min = res;
+          }
       }
+
+      Serial.print("Min Value: ");
+      Serial.print(min.result);
+      Serial.print("   Min freq: ");
+      Serial.println(min.freq);
+    
 
       // return to base freq once finished the tests
       BASE_FREQ = BASE_FREQ_PREV;
@@ -786,7 +799,7 @@ void loop()
    else if (CheckSingleParameter(cmd, "bf", idx, boolean, "base freq failed"))
 	{
 		Serial.print("Setting BASE_FREQ to  ");
-		Serial.print(idx);
+		Serial.println(idx);
     scanner->setBaseFreq(idx);
 	}
 
