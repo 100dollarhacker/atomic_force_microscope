@@ -665,14 +665,14 @@ public:
 
 
   // Make a scan over X-axis. Assuming 'landed' the tip is in kind of equalibrium going up you touch the sample going down you disconnect
-  void scanX(uint16_t steps)
+  void scanXlr(uint16_t steps)
   {
       XYZ_t xyz;
 
 
       Serial.println("Scanning X: ");
 
-      debug = 0 ;
+      // debug = 0 ;
       for (int i = 0 ; i < 100 ; i++) {
 
           int fr = freqs->GetFreqResponse().result ;
@@ -688,6 +688,11 @@ public:
           delay(100UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
       }
+  }
+
+  void scanXrl(uint16_t steps)
+  {
+      XYZ_t xyz;
 
       Serial.println("Scanning X(backwards) : ");
 
@@ -709,7 +714,7 @@ public:
 
       }
 
-      debug = 1 ;
+      // debug = 1 ;
 
   }
       
@@ -926,13 +931,29 @@ void loop()
     // }
 
 
-    else if (CheckSingleParameter(cmd, "scanx", idx, boolean, "scan failed"))
+    else if (CheckSingleParameter(cmd, "scanxlr", idx, boolean, "scan failed"))
     {
-      Serial.print("Start to scan with steps of ");
+      Serial.print("Start to scan left to right with steps of ");
       Serial.println(idx);
 
 
-      scanner->scanX(idx);
+      scanner->scanXlr(idx);
+
+      Serial.println("DONE!");
+
+
+    }
+
+   else if (CheckSingleParameter(cmd, "scanxrl", idx, boolean, "scan failed"))
+    {
+      Serial.print("Start to scan right to left with steps of ");
+      Serial.println(idx);
+
+
+      scanner->scanXrl(idx);
+
+      Serial.println("DONE!");
+
 
     }
 
@@ -942,6 +963,7 @@ void loop()
       Serial.print(idx);
       Serial.println("  steps");
       scanner->MPDown(idx);
+
     }
     else if (CheckSingleParameter(cmd, "mu", idx, boolean, "down failed"))
     {
@@ -965,13 +987,13 @@ void loop()
         delay(10);
         fr = scanner->GetFreqResponse();
       }
+      Serial.println("DONE!");
     }
 
     else if (CheckSingleParameter(cmd, "ring", idx, boolean, "ring failed"))
     {
       Serial.print("Ringing channel ");
-      Serial.print(idx);
-      Serial.println(" ");
+      Serial.println(idx);
       scanner->ring(idx);
     }
 
