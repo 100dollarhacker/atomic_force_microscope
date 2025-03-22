@@ -1,3 +1,4 @@
+import random
 from tkinter import *
 from tkinter import ttk
 import tkinter as tk
@@ -225,10 +226,16 @@ MicroPanel2.pack(side=tk.TOP)
 label = ttk.Label(master=MicroPanel1,text="MicroPosi")
 label.pack()
 
-sqroot = ttk.Button(MicroPanel2, text="↑")
+def micro_up():
+    serial_command("mu " + selected_option_micro.get())
+
+def micro_down():
+    serial_command("md " + selected_option_micro.get())
+
+sqroot = ttk.Button(MicroPanel2, text="↑", command=micro_up)
 sqroot.grid(row=0, column=2, padx=2, pady=2, sticky="nw")
 
-sqroot = ttk.Button(MicroPanel2, text="↓")
+sqroot = ttk.Button(MicroPanel2, text="↓", command=micro_down)
 sqroot.grid(row=2, column=2, padx=2, pady=2, sticky="nw")
 
 
@@ -276,23 +283,36 @@ backspace.grid(row=1, column=0, padx=2, pady=0, sticky="nw")
 plusminus = ttk.Button(NanoPanel2, text="→")
 plusminus.grid(row=1, column=3, padx=2, pady=2, sticky="ne")
 
-zero = ttk.Button(NanoPanel2, text="0")
+
+# setting nano x,y,z coridnates to zero
+def nano_reset_position():
+    serial_command("reset")
+
+zero = ttk.Button(NanoPanel2, text="0", command=nano_reset_position)
 zero.grid(row=1, column=2, padx=2, pady=2)
 
 
-sqroot = ttk.Button(NanoPanel2, text="↑")
+def nano_up():
+    # This is not a mistake nano up is actually down... long story ... I should change it
+    serial_command("d " + selected_option_nano.get())
+
+def nano_down():
+    # This is not a mistake nano up is actually down... long story ... I should change it
+    serial_command("u " + selected_option_nano.get())
+
+sqroot = ttk.Button(NanoPanel2, text="↑", command=nano_up)
 sqroot.grid(row=0, column=2, padx=2, pady=2, sticky="nw")
 
-sqroot = ttk.Button(NanoPanel2, text="↓")
+sqroot = ttk.Button(NanoPanel2, text="↓", command=nano_down)
 sqroot.grid(row=2, column=2, padx=2, pady=2, sticky="nw")
 
 def set_nano_steps(value):
-    print("Nano steps:", selected_option.get())
+    print("Nano steps:", selected_option_nano.get())
 
 options = ["1000", "100", "10", "1"]
 
-selected_option = tk.StringVar()
-dropdown = ttk.Combobox(NanoPanel, textvariable=selected_option, values=options)
+selected_option_nano = tk.StringVar()
+dropdown = ttk.Combobox(NanoPanel, textvariable=selected_option_nano, values=options)
 
 
 dropdown.bind('<<ComboboxSelected>>', set_nano_steps)
@@ -300,7 +320,10 @@ dropdown.bind('<<ComboboxSelected>>', set_nano_steps)
 dropdown.current(0)
 dropdown.pack(pady=20)
 
-land = ttk.Button(NanoPanel, text="Land")
+def landing():
+    serial_command("land " + str(selected_option_nano.get()))
+
+land = ttk.Button(NanoPanel, text="Land", command=landing)
 land.pack()
 
 
@@ -321,17 +344,28 @@ scan_flag = False
 
 
 def task(shared_bool):
+    global canvas
+    global pp
+    global intensity
+
     print("In task")
-    while shared_bool.is_set():
+    for i in range(100):
+        if not shared_bool.is_set():
+            break
         time.sleep(1)
-        print(".")
+        for j in range(100):
+            intensity[i][j] = 123# random.Random(233)
+        # intensity2 = np.array(z).reshape(100, 100)
+        pp.set_array(intensity)
+        canvas.draw()
+
     print("Scan stopped --- ")
 
 
 def start_scan():
     global shared_bool
     shared_bool.set()
-    print(f"Starting scan...{dir(shared_bool)}")
+    print(f"Starting scan...")
 
     thread1 = threading.Thread(target=task, args=(shared_bool,))
     thread1.start()
@@ -357,8 +391,18 @@ stop.pack()
 ScanSubPanel.pack()
 
 
+def reset_graph():
+    global canvas
+    global pp
+    global intensity
+    z = [0] * 10000
+    intensity = np.array(z).reshape(100, 100)
+    pp.set_array(intensity)
+    canvas.draw()
 
 
+reset_button = ttk.Button(NanoPanel, text="Reset Graph", command=reset_graph)
+reset_button.pack()
 
 
 
@@ -375,6 +419,7 @@ ScanSubPanel.pack()
 # ----------------------------------- image panel
 
 
+
 fig = plt.figure(figsize=(12, 10), dpi=70)
 ax = fig.add_subplot(111)
 
@@ -387,9 +432,9 @@ intensity = np.array(z).reshape(100, 100)
 intensity[10][10] = 34
 intensity[30][20] = 134
 
-plt.pcolormesh(x, y, intensity, vmin=0, vmax = 270)
+pp = plt.pcolormesh(x, y, intensity, vmin=0, vmax = 270)
 plt.colorbar()  # need a colorbar to show the intensity scale
-#ddplt.show()
+
 
 
 canvas = FigureCanvasTkAgg(fig, master=ImagePanel)
