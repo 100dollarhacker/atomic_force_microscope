@@ -46,6 +46,22 @@ ImagePanel.pack()
 
 
 
+
+
+def serial_command_with_done(cmd):
+    # data = ser.readline().decode('utf-8').strip()
+    # print(f"Response0: {data}")
+
+    ser.write(cmd.encode('utf-8'))
+
+    data = ser.readline().decode('utf-8').strip()
+    while data and not data.startswith("DONE!"):# and not data.startswith("Start to scan"):
+        print(f"Response: {data}")
+        data = ser.readline().decode('utf-8').strip()
+
+    print(f"Serial comm done {data}")
+
+
 def serial_command(cmd):
     ser.write(cmd.encode('utf-8'))
     data = ser.readline().decode('utf-8').strip()
@@ -134,7 +150,7 @@ FreqSubPanel = ttk.Frame(master=ControlPanel, relief=tk.GROOVE, borderwidth=5)
 label = ttk.Label(master=FreqSubPanel,text="Freq:")
 label.pack()
 
-userFreq=tk.DoubleVar(value=32765)
+userFreq=tk.DoubleVar(value=32747)
 freqSpinBox = tk.Spinbox(FreqSubPanel, from_= 0.0, to = 99999,width=7, increment=0.1,
     textvariable=userFreq,font=font1)
 
@@ -239,8 +255,8 @@ sqroot = ttk.Button(MicroPanel2, text="↓", command=micro_down)
 sqroot.grid(row=2, column=2, padx=2, pady=2, sticky="nw")
 
 
-def set_micro_steps():
-    print("Micro steps:", options_micro.get())
+def set_micro_steps(*args):
+    print("Micro steps:", selected_option_micro.get())
 
 options_micro = ["1000", "100", "10", "1"]
 
@@ -263,7 +279,7 @@ eject.pack()
 
 def approach_micro():
     print("Approaching... ")
-    serial_command("ml "+selected_option_micro.get())
+    serial_command_with_done("ml "+selected_option_micro.get())
 
 approach = ttk.Button(MicroPanel, text="Approach", command=approach_micro)
 approach.pack()
@@ -321,7 +337,7 @@ dropdown.current(0)
 dropdown.pack(pady=20)
 
 def landing():
-    serial_command("land " + str(selected_option_nano.get()))
+    serial_command_with_done("land " + str(selected_option_nano.get()))
 
 land = ttk.Button(NanoPanel, text="Land", command=landing)
 land.pack()
@@ -348,16 +364,26 @@ def task(shared_bool):
     global pp
     global intensity
 
+
+    # z = [0] * 10000
+    # intensity = np.array(z).reshape(100, 100)
+    # pp.set_array(intensity)
+    # canvas.draw()
+
     print("In task")
-    for i in range(100):
-        if not shared_bool.is_set():
-            break
-        time.sleep(1)
-        for j in range(100):
-            intensity[i][j] = 123# random.Random(233)
-        # intensity2 = np.array(z).reshape(100, 100)
-        pp.set_array(intensity)
-        canvas.draw()
+    serial_command_with_done("scanxlr 10")
+
+    # for i in range(100):
+    #     if not shared_bool.is_set():
+    #         break
+    #     time.sleep(1)
+    #     print("Getting the data please wati")
+    #     serial_command_with_done("scanxlr 10")
+    #     # for j in range(100):
+    #     #     intensity[i][j] = 123# random.Random(233)
+    #     # intensity2 = np.array(z).reshape(100, 100)
+    #     pp.set_array(intensity)
+    #     canvas.draw()
 
     print("Scan stopped --- ")
 
