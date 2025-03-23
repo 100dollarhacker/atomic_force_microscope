@@ -374,6 +374,8 @@ public:
     
     dac->Y_left( 0 );
     dac->Y_right( 0 );
+
+
     
   }
 
@@ -388,16 +390,18 @@ class Scanner
 {
 public:
   Scanner(){position = new Position(); freqs = new FreqSensor(); mp = new MicroPosition();};
-  void reset(){delete position; position = new Position();}
+  void reset(){position->reset();}
   void ring(int channel) {position->ring(channel);}
   void down(uint16_t steps) 
   {
-    Serial.println("Scanner going Down"); 
     position->move(0, 0 , -steps); 
     position->print();
 
   }//freqs->GetFreq();};
   void up(uint16_t steps) {Serial.println("Scanner going Up");position->move( 0 , 0, steps); }//freqs->GetFreq();};
+  void x(uint16_t steps) {Serial.println("Scanner going Up");position->move( steps , 0, 0); }//freqs->GetFreq();};
+  void y(uint16_t steps) {Serial.println("Scanner going Up");position->move( 0 , steps, 0); }//freqs->GetFreq();};
+
   void MPDown(uint16_t steps) {mp->Down(steps);};
   void MPUp(uint16_t steps) {mp->Up(steps);};
   
@@ -506,10 +510,11 @@ public:
       {
           delay(1000); // Let piezzoelectric disc respond. Not sure if it too much or not. 
           xyz = position->move(0, 0 , steps);
+          Serial.print("Nano position ");
+          Serial.println(xyz.z);
       } 
-      Serial.println("Landed at position ");
-      Serial.print(xyz.z);
-      Serial.println("");
+
+      Serial.println("DONE!");
   }
 
   XYZ_t eland(uint16_t steps, uint16_t threshold)
@@ -672,7 +677,7 @@ public:
 
       Serial.println("Scanning X: ");
 
-      // debug = 0 ;
+      debug = 0 ;
       for (int i = 0 ; i < 100 ; i++) {
 
           int fr = freqs->GetFreqResponse().result ;
@@ -688,6 +693,8 @@ public:
           delay(100UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
       }
+      Serial.println("");
+
   }
 
   void scanXrl(uint16_t steps)
@@ -695,6 +702,9 @@ public:
       XYZ_t xyz;
 
       Serial.println("Scanning X(backwards) : ");
+
+      debug = 0 ;
+
 
       // go back to where we started just a check if this is noise or not
       for (int i = 0 ; i < 100 ; i++) {
@@ -713,6 +723,7 @@ public:
           delay(100UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
       }
+      Serial.println("");
 
       // debug = 1 ;
 
@@ -772,14 +783,14 @@ void loop()
 	{
 		Serial.print("Going down by  ");
 		Serial.print(idx);
-    Serial.println("  steps");
+    Serial.print("  steps");
     scanner->down(idx);
 	}
   else if (CheckSingleParameter(cmd, "u", idx, boolean, "up failed"))
 	{
 		Serial.print("Going up by  ");
 		Serial.print(idx);
-    Serial.println("  steps");
+    Serial.print("  steps");
     scanner->up(idx);
 	}
 
@@ -788,7 +799,15 @@ void loop()
 		Serial.print("Going left by  ");
 		Serial.print(idx);
     Serial.println("  steps");
-    scanner->up(idx);
+    scanner->x(idx);
+	}
+
+  else if (CheckSingleParameter(cmd, "y", idx, boolean, "move left"))
+	{
+		Serial.print("Y update by  ");
+		Serial.print(idx);
+    Serial.println("  steps");
+    scanner->y(idx);
 	}
   // else if (CheckSingleParameter(cmd, "s", idx, boolean, "swing failed"))
 	// {
@@ -981,12 +1000,19 @@ void loop()
       
       freq_resp fr = scanner->GetFreqResponse();
 
+      // debug = 1 ;
+
       while(fr.result < THRESHOLD) 
       {
         scanner->MPDown(idx);
         delay(10);
         fr = scanner->GetFreqResponse();
+        // Serial.print("Frequency response: ");
+        // Serial.println(fr.result);
+     
+
       }
+      // debug = 0 ;
       Serial.println("DONE!");
     }
 
