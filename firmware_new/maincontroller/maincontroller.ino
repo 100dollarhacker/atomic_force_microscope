@@ -392,15 +392,10 @@ public:
   Scanner(){position = new Position(); freqs = new FreqSensor(); mp = new MicroPosition();};
   void reset(){position->reset();}
   void ring(int channel) {position->ring(channel);}
-  void down(uint16_t steps) 
-  {
-    position->move(0, 0 , -steps); 
-    position->print();
-
-  }//freqs->GetFreq();};
-  void up(uint16_t steps) {Serial.println("Scanner going Up");position->move( 0 , 0, steps); }//freqs->GetFreq();};
-  void x(uint16_t steps) {Serial.println("Scanner going Up");position->move( steps , 0, 0); }//freqs->GetFreq();};
-  void y(uint16_t steps) {Serial.println("Scanner going Up");position->move( 0 , steps, 0); }//freqs->GetFreq();};
+  void down(uint16_t steps) {position->move(0, 0 , -steps);}
+  void up(uint16_t steps) {position->move( 0 , 0, steps); }//freqs->GetFreq();};
+  void x(uint16_t steps) {position->move( steps , 0, 0); }//freqs->GetFreq();};
+  void y(uint16_t steps) {position->move( 0 , steps, 0); }//freqs->GetFreq();};
 
   void MPDown(uint16_t steps) {mp->Down(steps);};
   void MPUp(uint16_t steps) {mp->Up(steps);};
@@ -675,12 +670,12 @@ public:
       XYZ_t xyz;
 
 
-      Serial.println("Scanning X: ");
+      // // Serial.println("Scanning X2: ");
 
       debug = 0 ;
       for (int i = 0 ; i < 100 ; i++) {
 
-          int fr = freqs->GetFreqResponse().result ;
+          uint16_t fr = freqs->GetFreqResponse().result ;
 
 
           Serial.print(fr);
@@ -693,7 +688,9 @@ public:
           delay(100UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
       }
-      Serial.println("");
+      Serial.println(",");
+      // Serial.println("--");
+      // Serial.println("--");
 
   }
 
@@ -783,14 +780,14 @@ void loop()
 	{
 		Serial.print("Going down by  ");
 		Serial.print(idx);
-    Serial.print("  steps");
+    Serial.println("  steps");
     scanner->down(idx);
 	}
   else if (CheckSingleParameter(cmd, "u", idx, boolean, "up failed"))
 	{
 		Serial.print("Going up by  ");
 		Serial.print(idx);
-    Serial.print("  steps");
+    Serial.println("  steps");
     scanner->up(idx);
 	}
 
