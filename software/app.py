@@ -49,18 +49,22 @@ ImagePanel.pack()
 
 
 def serial_command_with_done(cmd):
+    global ser
     # data = ser.readline().decode('utf-8').strip()
     # print(f"Response0: {data}")
 
     ser.write(cmd.encode('utf-8'))
 
+    output = None
     data = ser.readline().decode('utf-8').strip()
     while data and not data.startswith("DONE!"):# and not data.startswith("Start to scan"):
         print(f"Response: {data}")
+        output = data
         data = ser.readline().decode('utf-8').strip()
 
     print(f"Serial comm done {data}")
-
+    if output:
+        return output
 
 def serial_command(cmd):
     ser.write(cmd.encode('utf-8'))
@@ -89,7 +93,8 @@ def set_serial_comm(value):
     port = "/dev/tty"+serial_option.get()
     print(f"Connecting to {port}")
 
-    ser = serial.Serial(port, 9600)  # Replace '/dev/ttyUSB0' with your port
+    ser = serial.Serial(port, 9600, timeout=4)  # Replace '/dev/ttyUSB0' with your port
+    time.sleep(2)
     #print(f"Serial port connected {dir(ser)}")
 
      
@@ -220,6 +225,7 @@ finefreq.pack()
 
 
 def freq_resp():
+    global ser
     serial_command("fr")
     # message = "fr"
     # ser.write(message.encode('utf-8'))
@@ -363,38 +369,51 @@ def task(shared_bool):
     global canvas
     global pp
     global intensity
+    global ser
 
 
-    # z = [0] * 10000
-    # intensity = np.array(z).reshape(100, 100)
-    # pp.set_array(intensity)
-    # canvas.draw()
 
-    print("In task")
-    serial_command_with_done("scanxlr 10")
+    print("In scan task")
 
-    # for i in range(100):
-    #     if not shared_bool.is_set():
-    #         break
-    #     time.sleep(1)
-    #     print("Getting the data please wati")
-    #     serial_command_with_done("scanxlr 10")
-    #     # for j in range(100):
-    #     #     intensity[i][j] = 123# random.Random(233)
-    #     # intensity2 = np.array(z).reshape(100, 100)
-    #     pp.set_array(intensity)
-    #     canvas.draw()
 
-    print("Scan stopped --- ")
+    for j in range(50):
+        if not shared_bool.is_set():
+            break
+
+        output = serial_command_with_done("scanxlr 10")
+        # print(f"Output {output}")
+        my_list = output.split(",")
+
+        for i in range(100):
+            intensity[2 * j][i] = my_list[i]
+
+        pp.set_array(intensity)
+        canvas.draw()
+
+        serial_command("y 10")
+
+
+        output = serial_command_with_done("scanxrl 10")
+        my_list = output.split(",")
+
+        for i in range(100):
+            intensity[2*j+1][i] = my_list[100-i-1]
+
+        pp.set_array(intensity)
+        canvas.draw()
+
+    print("Scan task ended --- ")
 
 
 def start_scan():
+    global  ser
     global shared_bool
     shared_bool.set()
     print(f"Starting scan...")
 
     thread1 = threading.Thread(target=task, args=(shared_bool,))
     thread1.start()
+    thread1.join()
 
 
 
