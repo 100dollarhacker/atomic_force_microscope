@@ -685,10 +685,10 @@ public:
 
           xyz = position->move(steps, 0 , 0);
 
-          delay(100UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+          delay(10UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
       }
-      Serial.println(",");
+      Serial.println("");
       // Serial.println("--");
       // Serial.println("--");
 
@@ -717,7 +717,7 @@ public:
 
           xyz = position->move(-steps, 0 , 0);
 
-          delay(100UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+          delay(10UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
       }
       Serial.println("");
