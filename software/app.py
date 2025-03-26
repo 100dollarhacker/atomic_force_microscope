@@ -369,19 +369,19 @@ def task(shared_bool):
     global canvas
     global pp
     global intensity
-    global ser
+    #global ser
 
+    step_size = 100
 
-
-    print("In scan task")
+    print("In scan task step_size:" + str(step_size))
 
 
     for j in range(50):
         if not shared_bool.is_set():
             break
 
-        output = serial_command_with_done("scanxlr 10")
-        # print(f"Output {output}")
+        output = serial_command_with_done("scanxlr "+ str(step_size))
+        print(f"Output {output}")
         my_list = output.split(",")
 
         for i in range(100):
@@ -390,10 +390,10 @@ def task(shared_bool):
         pp.set_array(intensity)
         canvas.draw()
 
-        serial_command("y 10")
+        serial_command("y "+str(step_size))
 
 
-        output = serial_command_with_done("scanxrl 10")
+        output = serial_command_with_done("scanxrl "+str(step_size))
         my_list = output.split(",")
 
         for i in range(100):
@@ -402,7 +402,10 @@ def task(shared_bool):
         pp.set_array(intensity)
         canvas.draw()
 
+        serial_command("y "+str(step_size))
+    
     print("Scan task ended --- ")
+    serial_command("y " +str(100*step_size))
 
 
 def start_scan():
@@ -413,8 +416,8 @@ def start_scan():
 
     thread1 = threading.Thread(target=task, args=(shared_bool,))
     thread1.start()
-    thread1.join()
-
+    #thread1.join()
+    print("main scan ended....")
 
 
 
