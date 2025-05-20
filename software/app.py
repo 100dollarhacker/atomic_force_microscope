@@ -18,6 +18,113 @@ import threading
 from threading import Thread, Event
 
 
+# for queue of messaging between main program/buttons and serial comm. thread
+import threading
+import queue 
+q = queue.Queue()
+outq = queue.Queue()
+
+
+############################## Serial comm start
+
+
+class MyThread(threading.Thread):
+    def __init__(self, q, outq):
+        threading.Thread.__init__(self)
+        self.q = q
+        self.outq = outq
+
+    ser = None
+
+    def set_serial_comm(self):
+        
+        port = "/dev/tty"+serial_option.get()
+        print(f"Connecting to {port}")
+
+        self.ser = serial.Serial(port, 9600, timeout=4)  # Replace '/dev/ttyUSB0' with your port
+        time.sleep(2)
+        #print(f"Serial port connected {dir(ser)}")
+
+         
+        self.ser.readline().decode('utf-8').strip()
+        data = self.ser.readline().decode('utf-8').strip()
+        print(f"Data: {data}")
+
+        if data.startswith("AFMv"):
+            print("AFM machine connected! Now find the frequency with difference")
+
+        # just for flashing old data
+        self.ser.readline().decode('utf-8').strip()
+        self.ser.readline().decode('utf-8').strip()
+
+
+    def real_serial_command(self, cmd):
+        self.ser.write(cmd.encode('utf-8'))
+        data = self.ser.readline().decode('utf-8').strip()
+        print(f"Response: {data}")
+
+    def real_serial_command_with_done(self, cmd):
+
+        self.ser.write(cmd.encode('utf-8'))
+       
+        output = ""
+        data = self.ser.readline().decode('utf-8').strip()
+       
+        while data and not data.startswith("DONE!"):# and not data.startswith("Start to scan"):
+           print(f"Response: {data}")
+
+           num = data.split(",")[0]
+           output = output + ", " + num
+           print(f"output: {output}")
+           data = self.ser.readline().decode('utf-8').strip()
+
+        print(f"Serial comm done {data}")
+        if output:
+            outq.put(output)
+
+    def run(self):
+
+        while True:
+            item, done = q.get()
+            print(f'2Working on {item}/{done}')
+            if item.startswith("connect"):
+                self.set_serial_comm()
+            elif not done:
+                self.real_serial_command(item)
+            else:
+                self.real_serial_command_with_done(item)
+            print(f'2Finished {item}/{done}')
+            q.task_done()
+
+
+MyThread(q, outq).start()
+
+
+
+
+
+def serial_command_with_done(cmd):
+   
+    print(f"At serial commd with done {cmd}")
+    q.put((cmd, True))
+
+    while(outq.empty()):
+        pass
+        
+    output = outq.get()
+    print(f"DATA::: {output}")
+    if output:
+       return output
+
+def serial_command(cmd):
+    print(f"At serail command {cmd}")
+    q.put((cmd, False))
+
+
+
+########## Serail comm end ###########################333
+
+
 font1=('Times 24 normal')
 
 
@@ -47,31 +154,6 @@ ImagePanel.pack()
 
 
 
-
-def serial_command_with_done(cmd):
-    global ser
-    # data = ser.readline().decode('utf-8').strip()
-    # print(f"Response0: {data}")
-
-    ser.write(cmd.encode('utf-8'))
-
-    output = None
-    data = ser.readline().decode('utf-8').strip()
-    while data and not data.startswith("DONE!"):# and not data.startswith("Start to scan"):
-        print(f"Response: {data}")
-        output = data
-        data = ser.readline().decode('utf-8').strip()
-
-    print(f"Serial comm done {data}")
-    if output:
-        return output
-
-def serial_command(cmd):
-    ser.write(cmd.encode('utf-8'))
-    data = ser.readline().decode('utf-8').strip()
-    print(f"Response: {data}")
-
-
 # --------------------------------- setup ----------
 
 
@@ -86,28 +168,8 @@ UsbSubPanel = ttk.Frame(master=SetupPanel, relief=tk.GROOVE, borderwidth=5)
 label = ttk.Label(master=UsbSubPanel,text="USB Port:")
 label.pack()
 
-ser = None
 
-def set_serial_comm(value):
-    global ser
-    port = "/dev/tty"+serial_option.get()
-    print(f"Connecting to {port}")
 
-    ser = serial.Serial(port, 9600, timeout=4)  # Replace '/dev/ttyUSB0' with your port
-    time.sleep(2)
-    #print(f"Serial port connected {dir(ser)}")
-
-     
-    ser.readline().decode('utf-8').strip()
-    data = ser.readline().decode('utf-8').strip()
-    print(f"Data: {data}")
-
-    if data.startswith("AFMv"):
-        print("AFM machine connected! Now find the frequency with difference")
-
-    # just for flashing old data
-    ser.readline().decode('utf-8').strip()
-    ser.readline().decode('utf-8').strip()
 
 
 
@@ -118,7 +180,16 @@ serialdropdown = ttk.Combobox(UsbSubPanel, textvariable=serial_option, values=se
 serialdropdown.pack()
 
 
-serialdropdown.bind('<<ComboboxSelected>>', set_serial_comm)
+
+def connect_to_port(value):
+    global q
+    print("About to connect really...")
+    q.put(("connect", False))
+
+
+serialdropdown.bind('<<ComboboxSelected>>', connect_to_port)
+# serialdropdown.bind('<<ComboboxSelected>>', q.put(("connect", False)))
+# serialdropdown.bind('<<ComboboxSelected>>', threading.Thread(target=serial_comm_thread_worker, args=("/dev/usb1",), daemon=True).start())
 serialdropdown.current(0)
 UsbSubPanel.pack()
 
@@ -150,12 +221,14 @@ thrSpinBox.pack()
 ThresholdSubPanel.pack()
 
 
+
+
 FreqSubPanel = ttk.Frame(master=ControlPanel, relief=tk.GROOVE, borderwidth=5)
 
 label = ttk.Label(master=FreqSubPanel,text="Freq:")
 label.pack()
 
-userFreq=tk.DoubleVar(value=32747)
+userFreq=tk.DoubleVar(value=35000)#32747)
 freqSpinBox = tk.Spinbox(FreqSubPanel, from_= 0.0, to = 99999,width=7, increment=0.1,
     textvariable=userFreq,font=font1)
 
@@ -168,11 +241,11 @@ def freq_changed(*args):
     print(f"Entry content changed:{userFreq.get()} int:{int(10*userFreq.get())} old_int:{int(10*old_userFreq)}" )
     if int(old_userFreq) != int(userFreq.get()):
         print("Int changed")
-        message = "bf " + str(int(userFreq.get()))
-        ser.write(message.encode('utf-8'))
-        data = ser.readline().decode('utf-8').strip()
-
-        print(f"Response:  {data}")
+    #    message = "bf " + str(int(userFreq.get()))
+    #    ser.write(message.encode('utf-8'))
+    #    data = ser.readline().decode('utf-8').strip()
+    #    print(f"Response:  {data}")
+        serial_command("bf " + str(int(userFreq.get())) )
 
         old_userFreq = int(userFreq.get())
 
@@ -193,9 +266,31 @@ freqSpinBox.pack()
 
 FreqSubPanel.pack()
 
+
+
+
+
+FreqRangeSubPanel = ttk.Frame(master=ControlPanel, relief=tk.GROOVE, borderwidth=5)
+
+freq_label = ttk.Label(master=FreqRangeSubPanel,text="Range:")
+freq_label.pack()
+
+user_freq_val=tk.IntVar(value=30000)#300)
+freqSpinBox = tk.Spinbox(FreqRangeSubPanel, from_= 0, to = 50000,width=7, increment=1,
+    textvariable=user_freq_val,font=font1)
+
+#def freq_range(*args):
+#   serial_command("range "+str(user_freq_val.get())    )
+
+#user_freq_val.trace_add("write", freq_range)
+freqSpinBox.pack()
+
+FreqRangeSubPanel.pack()
+
+
 def fr_range():
     print("sending range")
-    serial_command("range")
+    serial_command("range " +str(user_freq_val.get()) )
     data = ser.readline().decode('utf-8').strip()
 
     while(data and not data.startswith("Min Valu")):
@@ -204,8 +299,10 @@ def fr_range():
 
     print(f"Resp: {data}")
 
-finefreq= ttk.Button(ControlPanel, text="Range", command=fr_range)
+finefreq= ttk.Button(FreqRangeSubPanel, text="Range", command=fr_range)
 finefreq.pack()
+
+
 
 
 def fr_fine_range():
@@ -365,7 +462,8 @@ shared_bool = Event()
 scan_flag = False
 
 
-def task(shared_bool):
+# def task(shared_bool):
+def task():
     global canvas
     global pp
     global intensity
@@ -377,8 +475,8 @@ def task(shared_bool):
 
 
     for j in range(50):
-        if not shared_bool.is_set():
-            break
+        # if not shared_bool.is_set():
+        #     break
 
         output = serial_command_with_done("scanxlr "+ str(step_size))
         print(f"Output {output}")
@@ -409,14 +507,15 @@ def task(shared_bool):
 
 
 def start_scan():
-    global  ser
-    global shared_bool
-    shared_bool.set()
+    # global  ser
+    # global shared_bool
+    # shared_bool.set()
     print(f"Starting scan...")
 
-    thread1 = threading.Thread(target=task, args=(shared_bool,))
-    thread1.start()
+    # thread1 = threading.Thread(target=task, args=(shared_bool,))
+    # thread1.start()
     #thread1.join()
+    task()
     print("main scan ended....")
 
 
