@@ -38,6 +38,10 @@ uint16_t THRESHOLD = 100;
 const uint16_t MAX_Z_VALUE = 32000;
 
 
+int demo_flag  = 0; 
+uint16_t demo_result = 120; 
+
+
 ///////////////////// FreqSensor end ///////////////////////////
 
 //Communication parameters
@@ -275,6 +279,9 @@ public:
     }
     fres.freq = BASE_FREQ;
     fres.result = result < COUNT_NUM - result ? result: COUNT_NUM - result;
+
+    if (demo_flag)
+      fres.result = demo_result;
 
     return fres;
 
@@ -671,7 +678,7 @@ public:
       XYZ_t xyz;
 
 
-      Serial.println("Scanning X: ");
+      // Serial.println("Scanning X: ");
       delay(1000UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
       xyz = position->move(-steps*10, 0 , 0);
@@ -688,7 +695,8 @@ public:
 
           xyz = position->move(steps, 0 , 0);
 
-          delay(100UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+          
+          //RETURN IT: delay(100UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
       }
   }
@@ -715,7 +723,8 @@ public:
 
           xyz = position->move(steps, 0 , 0);
 
-          delay(10UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+          
+          //RETURN IT: delay(10UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
       }
       Serial.println("");
@@ -728,7 +737,7 @@ public:
   {
       XYZ_t xyz;
 
-      Serial.println("Scanning X(backwards) : ");
+      // Serial.println("Scanning X(backwards) : ");
 
       debug = 0 ;
 
@@ -747,7 +756,7 @@ public:
 
           xyz = position->move(-steps, 0 , 0);
 
-          delay(10UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+          // RETRUN IT: delay(10UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
       }
       Serial.println("");
@@ -765,6 +774,7 @@ private:
 
 };
 Scanner* scanner = new Scanner();
+
 
 void setup() 
 {
@@ -800,6 +810,11 @@ void loop()
 		// scanner->start();
 	}
 
+  else if (cmd == "demo")
+  {
+    demo_flag = 1 ;
+  }
+
   ///////////// Position controller functions ///////////////////////////////////////////
 	else if (cmd == "reset")
 	{
@@ -812,6 +827,10 @@ void loop()
 		Serial.print(idx);
     Serial.println("  steps");
     scanner->down(idx);
+
+    if (demo_flag)
+      demo_result -= 20;
+
 	}
   else if (CheckSingleParameter(cmd, "u", idx, boolean, "up failed"))
 	{
@@ -819,6 +838,10 @@ void loop()
 		Serial.print(idx);
     Serial.println("  steps");
     scanner->up(idx);
+
+    if (demo_flag)
+      demo_result += 20;
+
 	}
 
   else if (CheckSingleParameter(cmd, "x", idx, boolean, "move left"))
