@@ -133,16 +133,15 @@ public:
 
   float MIN(float a, float b) {return (a<b)?a:b;}
 
-  void GetFreqRange()
+  void GetFreqRange(uint16_t range)
   {
-      const int RANGE = 200;
       float BASE_FREQ_PREV = BASE_FREQ;
       freq_resp min = {500,500};
 
-      for (int i = 0 ; i < 2*RANGE ; i++)
+      for (uint16_t i = 0 ; i < range ; i++)
       {
 
-          BASE_FREQ = BASE_FREQ_PREV - RANGE + i ;
+          BASE_FREQ = BASE_FREQ_PREV  - i ;
           AD.setFrequency(0, BASE_FREQ); 
 
           freq_resp res = GetFreqResponse();
@@ -161,8 +160,39 @@ public:
       // return to base freq once finished the tests
       BASE_FREQ = BASE_FREQ_PREV;
       AD.setFrequency(0, BASE_FREQ); 
-
   }
+
+
+  // void GetFreqRange(int range)
+  // {
+  //     // const int RANGE = 200;
+  //     float BASE_FREQ_PREV = BASE_FREQ;
+  //     freq_resp min = {500,500};
+
+  //     for (int i = 0 ; i < 2*range ; i++)
+  //     {
+
+  //         BASE_FREQ = BASE_FREQ_PREV - range + i ;
+  //         AD.setFrequency(0, BASE_FREQ); 
+
+  //         freq_resp res = GetFreqResponse();
+  //         float min_res = MIN(res.result , COUNT_NUM - min.result);
+  //         if (min.result > res.result ) {
+  //           min = res;
+  //         }
+  //     }
+
+  //     Serial.print("Min Value: ");
+  //     Serial.print(min.result);
+  //     Serial.print("   Min freq: ");
+  //     Serial.println(min.freq);
+    
+
+  //     // return to base freq once finished the tests
+  //     BASE_FREQ = BASE_FREQ_PREV;
+  //     AD.setFrequency(0, BASE_FREQ); 
+
+  // }
 
   void GetMFreqRange()
   {
@@ -451,9 +481,9 @@ public:
       return freqs->GetFreqResponse();
   }
 
-  void GetFreqRange()
+  void GetFreqRange(uint16_t range)
   {
-      freqs->GetFreqRange();
+      freqs->GetFreqRange(range);
   }
 
 
@@ -832,11 +862,16 @@ void loop()
 	}
     
     // scan for operation frequency step of 1-2Hz
-    else if (cmd == "range")
+    // else if (cmd == "range")
+    // {
+    //   scanner->GetFreqRange();
+    // }
+    else if (CheckSingleParameter(cmd, "range", idx, boolean, "range failed"))
     {
-      scanner->GetFreqRange();
+      Serial.print("Setting RABGE to  ");
+		  Serial.print(idx);
+      scanner->GetFreqRange(idx);
     }
-
       // scan for operation frequency step of 1Hz 
     else if (cmd == "srange")
     {
