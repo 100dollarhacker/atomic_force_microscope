@@ -58,6 +58,10 @@ class MyThread(threading.Thread):
         self.ser.readline().decode('utf-8').strip()
 
 
+        serial_command("demo")
+
+
+
     def real_serial_command(self, cmd):
         self.ser.write(cmd.encode('utf-8'))
         data = self.ser.readline().decode('utf-8').strip()
@@ -69,12 +73,17 @@ class MyThread(threading.Thread):
        
         output = ""
         data = self.ser.readline().decode('utf-8').strip()
-       
+        print(f"Response1: {data}")
+
+        data = self.ser.readline().decode('utf-8').strip()
+
         while data and not data.startswith("DONE!"):# and not data.startswith("Start to scan"):
            print(f"Response: {data}")
 
-           num = data.split(",")[0]
-           output = output + ", " + num
+           # num = data.split(",")[0]
+           # num = data
+           # output = output + ", " + num
+           output = data
            print(f"output: {output}")
            data = self.ser.readline().decode('utf-8').strip()
 
@@ -122,7 +131,10 @@ def serial_command(cmd):
 
 
 
+
 ########## Serail comm end ###########################333
+
+
 
 
 font1=('Times 24 normal')
@@ -462,12 +474,10 @@ shared_bool = Event()
 scan_flag = False
 
 
-# def task(shared_bool):
-def task():
+def task(shared_bool):
     global canvas
     global pp
     global intensity
-    #global ser
 
     step_size = 100
 
@@ -475,8 +485,8 @@ def task():
 
 
     for j in range(50):
-        # if not shared_bool.is_set():
-        #     break
+        if not shared_bool.is_set():
+            break
 
         output = serial_command_with_done("scanxlr "+ str(step_size))
         print(f"Output {output}")
@@ -507,15 +517,12 @@ def task():
 
 
 def start_scan():
-    # global  ser
-    # global shared_bool
-    # shared_bool.set()
+    global shared_bool
+    shared_bool.set()
     print(f"Starting scan...")
 
-    # thread1 = threading.Thread(target=task, args=(shared_bool,))
-    # thread1.start()
-    #thread1.join()
-    task()
+    thread1 = threading.Thread(target=task, args=(shared_bool,))
+    thread1.start()
     print("main scan ended....")
 
 
