@@ -5,6 +5,7 @@ import tkinter as tk
 #from serial import Serial
 import serial
 import math
+from datetime import datetime
 
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -42,7 +43,7 @@ class MyThread(threading.Thread):
         print(f"Connecting to {port}")
 
         self.ser = serial.Serial(port, 9600, timeout=4)  # Replace '/dev/ttyUSB0' with your port
-        time.sleep(2)
+        # time.sleep(2)
         #print(f"Serial port connected {dir(ser)}")
 
          
@@ -95,14 +96,14 @@ class MyThread(threading.Thread):
 
         while True:
             item, done = q.get()
-            print(f'2Working on {item}/{done}')
+            print(f' -- Working on {item}/{done} time:{datetime.now().time()}')
             if item.startswith("connect"):
                 self.set_serial_comm()
             elif not done:
                 self.real_serial_command(item)
             else:
                 self.real_serial_command_with_done(item)
-            print(f'2Finished {item}/{done}')
+            print(f' -- Finished {item}/{done} time:{datetime.now().time()}')
             q.task_done()
 
 
