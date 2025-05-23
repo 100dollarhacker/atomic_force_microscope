@@ -34,7 +34,7 @@ int contact;
 float BASE_FREQ = 32462.0;//32770.8;//32750.3;
 float freq = BASE_FREQ;
 const uint16_t COUNT_NUM = 555;//55535;
-uint16_t THRESHOLD = 100;
+uint16_t THRESHOLD = 200;
 const uint16_t MAX_Z_VALUE = 32000;
 
 
@@ -353,7 +353,7 @@ public:
     Serial.print(" y: ");
     Serial.print(y_m);
     Serial.print(" z: ");
-    Serial.print(z_m);
+    Serial.println(z_m);
 
   }
 
@@ -461,8 +461,12 @@ private:
 
       return 250;
     } else if (xyz.z - sur < 300){
-      return 120;
+      Serial.print(" 120-4  ");
+
+      return THRESHOLD;
+      // return 120;
     } else {
+      Serial.print(" 40-4  ");
       return 40;
     }
     // return (sur - xyz.z)*(sur - xyz.z);
@@ -472,14 +476,18 @@ private:
 
   int above_threshold(int fr, int threshold)
   {
-      if (fr > threshold * 1.1)
+      // if (fr > threshold * 1.1)
+      if (fr > threshold + 20)
           return 1;
+      return 0;
   }
 
   int below_threshold(int fr, int threshold)
   {
-    if (fr < 0.8* threshold)
+    // if (fr < 0.8* threshold)
+    if (fr < threshold - 20)
           return 1;
+    return 0;
   }
 
   int not_threshold_range(int fr, int threshold)
@@ -782,53 +790,74 @@ public:
   void scanXlr(uint16_t steps)
   {
       XYZ_t xyz;
+      int fr;
+      int i = 0 ;
 
-
+      Serial.print("T1 ");
       // // Serial.println("Scanning X2: ");
 
-      debug = 0 ;
-      for (int i = 0 ; i < 100 ; i++) {
+      // debug = 0 ;
+      // for ( ; i < 100 ; i++) 
+      {
+      
+      //     // uint16_t fr = freqs->GetFreqResponse().result ;
+          // Serial.print("T2 ");
+      
 
-          // uint16_t fr = freqs->GetFreqResponse().result ;
+      //     // Serial.print(fr);
 
+      //     xyz = position->move(steps, 0 , 0);
 
-          // Serial.print(fr);
-
-          xyz = position->move(steps, 0 , 0);
-
-          int fr = freqs->GetFreqResponse().result ;
+      //     fr = freqs->GetFreqResponse().result ;
   
           if (demo_flag)
             fr = psaudo_fr(xyz, 99-i);
              
-          while (not_threshold_range(fr, THRESHOLD))
+          // while (not_threshold_range(fr, THRESHOLD))
           {
 
-            if (above_threshold(fr, THRESHOLD))
-                xyz = position->move(0, 0 , -50);
-            else if (below_threshold(fr, THRESHOLD))
-                xyz = position->move(0, 0 , +50);
+      //     //   Serial.print(fr);
+      //     //   Serial.print(":T3 ");
+
+
+            if (fr > THRESHOLD + 20) {
+               Serial.println("above:T4 ");
+                xyz = position->move(0, 0 , 50);
+            } else  if (fr < THRESHOLD - 40){
+               Serial.println("below:T4 ");
+
+              xyz = position->move(0, 0 , -50);
+            }
+
+      //     //   // if (above_threshold(fr, THRESHOLD)){
+      //     //   //     // Serial.println("above:T4 ");
+      //     //   //     xyz = position->move(0, 0 , 50);
+      //     //   // } else if (below_threshold(fr, THRESHOLD)){
+      //     //   //     // Serial.println("below:T4 ");
+
+      //     //   //     xyz = position->move(0, 0 , -50);
+      //     //   // }
 
  
  
-            int fr = freqs->GetFreqResponse().result ;
+      //     //   fr = freqs->GetFreqResponse().result ;
   
             if (demo_flag)
               fr = psaudo_fr(xyz, 99-i);
               
-            // Here should be the code that dynamically change position to 
+      //     //   // Here should be the code that dynamically change position to 
           }
 
-          // Serial.print(fr);
+      //     // Serial.print(fr);
           Serial.print(xyz.z);
           Serial.print(",");
 
 
 
-          // xyz = position->move(steps, 0 , 0);
+      //     // xyz = position->move(steps, 0 , 0);
 
           
-          //RETURN IT: delay(10UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+      //     //RETURN IT: delay(10UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
       }
       Serial.println("");
@@ -861,13 +890,13 @@ public:
           {
 
             if (above_threshold(fr, THRESHOLD))
-                xyz = position->move(0, 0 , -50);
+                xyz = position->move(0, 0 , 50);
             else if (below_threshold(fr, THRESHOLD))
-                xyz = position->move(0, 0 , +50);
+                xyz = position->move(0, 0 , -50);
 
  
 
-            int fr = freqs->GetFreqResponse().result ;
+            fr = freqs->GetFreqResponse().result ;
   
             if (demo_flag)
               fr = psaudo_fr(xyz, i);
