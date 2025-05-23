@@ -336,6 +336,16 @@ class Position
 
 public:
   Position()  {x_m=0;y_m=0;z_m=0; dac = new DAC();} // probably needs some parameters like width and height of structure that holds the quartz fork probe.
+  
+  XYZ_t get() 
+  {
+    XYZ_t xyz ;
+    xyz.x = x_m;
+    xyz.y = y_m;
+    xyz.z = z_m;   
+    return  xyz;
+  }
+
   void print()
   {
     Serial.print("Position x: ");
@@ -343,7 +353,7 @@ public:
     Serial.print(" y: ");
     Serial.print(y_m);
     Serial.print(" z: ");
-    Serial.println(z_m);
+    Serial.print(z_m);
 
   }
 
@@ -397,7 +407,7 @@ public:
     xyz.z = z_m;
 
     // Print our current position
-    // print();
+    print();
 
     return xyz;
   }
@@ -423,10 +433,73 @@ private:
    
 };
 
+
+/// TODO: Find the right place
+
+  // uint16_t psaudo_fr(XYZ_t xyz)
+  int psaudo_fr(XYZ_t xyz, int i )
+  {
+    // return ((xyz.x / 1000) % 2 == 0 && (xyz.y / 1000) % 2 == 0  )? 255 : 50 ; 
+
+    int sur =  i*10 ;//+ ((xyz.x / 1000) % 2 == 0 && (xyz.y / 1000) % 2 == 0  )? 1000 : 800 ;
+
+    Serial.print("sur: ");
+    Serial.print(sur);
+    Serial.print("delta: ");
+    Serial.print(xyz.z - sur);
+    Serial.print("   ");
+
+    
+
+
+    if (xyz.z - sur < 0){ // we've hit the surface
+      Serial.print(" 250-1  ");
+      return 250; 
+      
+    } else if (xyz.z - sur < 100) {
+      Serial.print(" 250-2  ");
+
+      return 250;
+    } else if (xyz.z - sur < 300){
+      return 120;
+    } else {
+      return 40;
+    }
+    // return (sur - xyz.z)*(sur - xyz.z);
+
+  }
+
+
+  int above_threshold(int fr, int threshold)
+  {
+      if (fr > threshold * 1.1)
+          return 1;
+  }
+
+  int below_threshold(int fr, int threshold)
+  {
+    if (fr < 0.8* threshold)
+          return 1;
+  }
+
+  int not_threshold_range(int fr, int threshold)
+  {
+      if (above_threshold(fr, threshold))
+          return 1;
+      if (below_threshold(fr, threshold))
+          return 1;
+
+      return 0;
+  }
+
+
+
 class Scanner
 {
 public:
   Scanner(){position = new Position(); freqs = new FreqSensor(); mp = new MicroPosition();};
+  XYZ_t GetPosition() {return(position->get());}
+  void printPos() {position->print();}
   void reset(){position->reset();}
   void ring(int channel) {position->ring(channel);}
   void down(uint16_t steps) {position->move(0, 0 , -steps);}
@@ -702,6 +775,9 @@ public:
   }
 
 
+
+
+
   // Make a scan over X-axis. Assuming 'landed' the tip is in kind of equalibrium going up you touch the sample going down you disconnect
   void scanXlr(uint16_t steps)
   {
@@ -713,15 +789,43 @@ public:
       debug = 0 ;
       for (int i = 0 ; i < 100 ; i++) {
 
-          uint16_t fr = freqs->GetFreqResponse().result ;
+          // uint16_t fr = freqs->GetFreqResponse().result ;
 
 
-          Serial.print(fr);
+          // Serial.print(fr);
+
+          xyz = position->move(steps, 0 , 0);
+
+          int fr = freqs->GetFreqResponse().result ;
+  
+          if (demo_flag)
+            fr = psaudo_fr(xyz, 99-i);
+             
+          while (not_threshold_range(fr, THRESHOLD))
+          {
+
+            if (above_threshold(fr, THRESHOLD))
+                xyz = position->move(0, 0 , -50);
+            else if (below_threshold(fr, THRESHOLD))
+                xyz = position->move(0, 0 , +50);
+
+ 
+ 
+            int fr = freqs->GetFreqResponse().result ;
+  
+            if (demo_flag)
+              fr = psaudo_fr(xyz, 99-i);
+              
+            // Here should be the code that dynamically change position to 
+          }
+
+          // Serial.print(fr);
+          Serial.print(xyz.z);
           Serial.print(",");
 
 
 
-          xyz = position->move(steps, 0 , 0);
+          // xyz = position->move(steps, 0 , 0);
 
           
           //RETURN IT: delay(10UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
@@ -744,17 +848,46 @@ public:
 
       // go back to where we started just a check if this is noise or not
       for (int i = 0 ; i < 100 ; i++) {
+          
+          
+          xyz = position->move(-steps, 0 , 0);
 
           int fr = freqs->GetFreqResponse().result ;
+
+          if (demo_flag)
+            fr = psaudo_fr(xyz, i);
+             
+          while (not_threshold_range(fr, THRESHOLD))
+          {
+
+            if (above_threshold(fr, THRESHOLD))
+                xyz = position->move(0, 0 , -50);
+            else if (below_threshold(fr, THRESHOLD))
+                xyz = position->move(0, 0 , +50);
+
+ 
+
+            int fr = freqs->GetFreqResponse().result ;
+  
+            if (demo_flag)
+              fr = psaudo_fr(xyz, i);
+              
+            // Here should be the code that dynamically change position to 
+          }
+
+          // Serial.print(fr);
+          Serial.print(xyz.z);
+
+
+          // int fr = freqs->GetFreqResponse().result ;
  
 
 
-          Serial.print(fr);
-          Serial.print(",");
+          // Serial.print(fr);
+          // Serial.print(",");
 
 
 
-          xyz = position->move(-steps, 0 , 0);
 
           // RETRUN IT: delay(10UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
@@ -825,22 +958,24 @@ void loop()
 	{
 		Serial.print("Going down by  ");
 		Serial.print(idx);
-    Serial.println("  steps");
+    Serial.print("  steps");
     scanner->down(idx);
 
-    if (demo_flag)
-      demo_result -= 20;
+    // if (demo_flag)
+    //   demo_result -= 20;
+    Serial.println("");
 
 	}
   else if (CheckSingleParameter(cmd, "u", idx, boolean, "up failed"))
 	{
 		Serial.print("Going up by  ");
 		Serial.print(idx);
-    Serial.println("  steps");
+    Serial.print("  steps");
     scanner->up(idx);
 
-    if (demo_flag)
-      demo_result += 20;
+    // if (demo_flag)
+    //   demo_result += 20;
+    Serial.println("");
 
 	}
 
@@ -934,7 +1069,16 @@ void loop()
     // get frequency response 
     else if (cmd == "fr") 
     {
-      scanner->GetFreqResponse();
+      // scanner->GetFreqResponse();
+      if (!demo_flag)
+        scanner->GetFreqResponse();
+      else {
+
+        int fr = psaudo_fr(scanner->GetPosition(), 0 );
+        Serial.print("FR: ");
+        Serial.println(fr);
+      }
+
     }
 
     else if (CheckSingleParameter(cmd, "thr", idx, boolean, ""))
