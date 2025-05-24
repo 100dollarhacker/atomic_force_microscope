@@ -138,6 +138,7 @@ def serial_command(cmd):
 
 
 
+
 font1=('Times 24 normal')
 
 
@@ -163,6 +164,7 @@ NanoPanel.pack(side=tk.LEFT)
 
 ImagePanel = ttk.Frame(master=window, relief=tk.GROOVE, borderwidth=5)
 ImagePanel.pack()
+
 
 
 
