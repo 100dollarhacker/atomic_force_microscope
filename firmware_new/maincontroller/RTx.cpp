@@ -88,22 +88,27 @@ String RTx::listen() {
 */
 bool CheckSingleParameter(String commandLine, String name, long &param, bool &ok, String errorMessage)
 {
-	//Serial.println(commandLine);
-	//Serial.println(name);
-	//Serial.println(commandLine.indexOf(name));
+	
+  Serial.println("TEST ----");
+  Serial.println(commandLine);
+	Serial.println(name);
+	Serial.println(commandLine.indexOf(name));
 	if (commandLine.indexOf(name) == 0)
 	{
-		//Serial.println("Found....");
+		Serial.println("Found....");
 		// setting
 		bool ok = false;
-		String part;
+		// String part;
 		long val = 0;
 		while (1)
 		{
-			int pos = commandLine.indexOf(' ', pos);
+			int pos = commandLine.indexOf(' ', 0);
 			if (pos == -1) break;
-			part = commandLine.substring(pos + 1);
-			//Serial.println(part);
+      Serial.print("pos:");
+      Serial.println(pos);
+			String part = commandLine.substring(pos) ;
+      Serial.print("part:");
+			Serial.println(part);
 			val = part.toInt();
 			if (val < 0) break;
 
@@ -113,9 +118,9 @@ bool CheckSingleParameter(String commandLine, String name, long &param, bool &ok
 
 		if (ok)
 		{
-			//Serial.println("OK");
+			Serial.println("OK");
 			param = val;
-			//Serial.println(param);
+			Serial.println(param);
 		}
 		else
 		{

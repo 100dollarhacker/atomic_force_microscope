@@ -995,6 +995,7 @@ void loop()
     Serial.println("");
 
 	}
+  
   else if (CheckSingleParameter(cmd, "u", idx, boolean, "up failed"))
 	{
 		Serial.print("Going up by  ");
@@ -1099,14 +1100,14 @@ void loop()
     else if (cmd == "fr") 
     {
       // scanner->GetFreqResponse();
-      if (!demo_flag)
+      // if (!demo_flag){
         scanner->GetFreqResponse();
-      else {
+      // }else {
 
-        int fr = psaudo_fr(scanner->GetPosition(), 0 );
-        Serial.print("FR: ");
-        Serial.println(fr);
-      }
+      //   int fr = psaudo_fr(scanner->GetPosition(), 0 );
+      //   Serial.print("FR: ");
+      //   Serial.println(fr);
+      // }
 
     }
 
@@ -1129,7 +1130,7 @@ void loop()
       Serial.println(idx);
       scanner->land(idx);
 
-    }
+    } // E234 - Good so far
 
     else if (CheckSingleParameter(cmd, "lands", idx, boolean, "land failed"))
     {
@@ -1180,11 +1181,11 @@ void loop()
 
     else if (CheckSingleParameter(cmd, "scanxlr", idx, boolean, "scan failed"))
     {
-      Serial.print("Start to scan left to right with steps of ");
+      Serial.print("Start to scan left to right ");
       Serial.println(idx);
 
 
-      scanner->scanXlr(idx);
+    //   scanner->scanXlr(idx);
 
       Serial.println("DONE!");
 
@@ -1202,7 +1203,8 @@ void loop()
       Serial.println("DONE!");
 
 
-    }
+    } // Good so far
+  
 
     else if (CheckSingleParameter(cmd, "md", idx, boolean, "down failed"))
     {
@@ -1242,13 +1244,17 @@ void loop()
       }
       // debug = 0 ;
       Serial.println("DONE!");
-    }
+    }  
+    
 
     else if (CheckSingleParameter(cmd, "ring", idx, boolean, "ring failed"))
     {
       Serial.print("Ringing channel ");
       Serial.println(idx);
       scanner->ring(idx);
+    }
+    else {
+      Serial.println("No mathch!");
     }
 
 
