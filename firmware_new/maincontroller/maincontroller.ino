@@ -554,7 +554,6 @@ public:
       return 0;
   }
 
-
   void GetFreq()
   {
       freqs->PrintCurrentFreq(); 
@@ -895,6 +894,18 @@ public:
             fr = psaudo_fr(xyz, i);
           }
              
+
+          for (int j = 0 ; j < 100 && not_threshold_range(fr, THRESHOLD); j++)
+          {
+
+               if (fr > THRESHOLD + 20) {
+              //  Serial.println("above:T4 ");
+                xyz = position->move(0, 0 , 50);
+            } else  if (fr < THRESHOLD - 40){
+              //  Serial.println("below:T4 ");
+
+              xyz = position->move(0, 0 , -50);
+            }
           // while (not_threshold_range(fr, THRESHOLD))
           // {
 
@@ -911,6 +922,7 @@ public:
             if (demo_flag){
               fr = psaudo_fr(xyz, i);
             }
+          }
               
           //   // Here should be the code that dynamically change position to 
           // }
@@ -924,7 +936,7 @@ public:
 
 
           // Serial.print(fr);
-          // Serial.print(",");
+          Serial.print(",");
 
 
 
@@ -989,6 +1001,12 @@ void loop()
   }
 
   ///////////// Position controller functions ///////////////////////////////////////////
+  else if (cmd == "pp")
+  {
+    scanner->printPos();
+  }
+
+
 	else if (cmd == "reset")
 	{
     Serial.println("Reseting postion");
@@ -1195,27 +1213,28 @@ void loop()
       Serial.print("Start to scan left to right  with setps of ");
       Serial.println(idx);
 
-
+      idx = 10;
       scanner->scanXlr(idx);
 
-      Serial.println("DONE!");
-      scanner->printPos();
+      Serial.println("  DONE!");
+      // scanner->printPos();
 
 
     }
 
-  //  else if (CheckSingleParameter(cmd, "scanxrl", idx, boolean, "scan failed"))
-  //   {
-  //     Serial.print("Start to scan right to left with steps of ");
-  //     Serial.println(idx);
+   else if (CheckSingleParameter(cmd, "scanxrl", idx, boolean, "scan failed"))
+    {
+      Serial.print("Start to scan right to left with steps of ");
+      Serial.println(idx);
+
+      idx = 10;
+      scanner->scanXrl(idx);
+
+      Serial.println("DONE!");
+      // scanner->printPos();
 
 
-  //     scanner->scanXrl(idx);
-
-  //     Serial.println("DONE!");
-
-
-  //   } // Good so far
+    } // Good so far
   
 
     else if (CheckSingleParameter(cmd, "md", idx, boolean, "down failed"))
