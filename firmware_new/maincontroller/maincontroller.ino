@@ -407,7 +407,7 @@ public:
     xyz.z = z_m;
 
     // Print our current position
-    print();
+    // print();
 
     return xyz;
   }
@@ -433,72 +433,6 @@ private:
    
 };
 
-
-/// TODO: Find the right place
-
-  // uint16_t psaudo_fr(XYZ_t xyz)
-  int psaudo_fr(XYZ_t xyz, int i )
-  {
-    // return ((xyz.x / 1000) % 2 == 0 && (xyz.y / 1000) % 2 == 0  )? 255 : 50 ; 
-
-    int sur =  i*10 ;//+ ((xyz.x / 1000) % 2 == 0 && (xyz.y / 1000) % 2 == 0  )? 1000 : 800 ;
-
-    Serial.print("sur: ");
-    Serial.print(sur);
-    Serial.print("delta: ");
-    Serial.print(xyz.z - sur);
-    Serial.print("   ");
-
-    
-
-
-    if (xyz.z - sur < 0){ // we've hit the surface
-      Serial.print(" 250-1  ");
-      return 250; 
-      
-    } else if (xyz.z - sur < 100) {
-      Serial.print(" 250-2  ");
-
-      return 250;
-    } else if (xyz.z - sur < 300){
-      Serial.print(" 120-4  ");
-
-      return THRESHOLD;
-      // return 120;
-    } else {
-      Serial.print(" 40-4  ");
-      return 40;
-    }
-    // return (sur - xyz.z)*(sur - xyz.z);
-
-  }
-
-
-  int above_threshold(int fr, int threshold)
-  {
-      // if (fr > threshold * 1.1)
-      if (fr > threshold + 20)
-          return 1;
-      return 0;
-  }
-
-  int below_threshold(int fr, int threshold)
-  {
-    // if (fr < 0.8* threshold)
-    if (fr < threshold - 20)
-          return 1;
-    return 0;
-  }
-
-  int not_threshold_range(int fr, int threshold)
-  {
-      if (above_threshold(fr, threshold))
-          return 1;
-      if (below_threshold(fr, threshold))
-          return 1;
-
-      return 0;
-  }
 
 
 
@@ -549,7 +483,78 @@ public:
 
       Serial.println("Round done !");
     }
-  }; // actually we need something more tricky here...
+  } // actually we need something more tricky here...
+
+
+  int psaudo_fr(XYZ_t xyz, int i )
+  {
+
+    int sur =  i*10 ;//+ ((xyz.x / 1000) % 2 == 0 && (xyz.y / 1000) % 2 == 0  )? 1000 : 800 ;
+
+    // Serial.println("sur: ");
+    // Serial.println(sur);
+    // Serial.println("delta: ");
+    // // Serial.print(xyz.z - sur);
+    // Serial.print("   ");
+
+    
+
+
+    if (xyz.z - sur < 0){ // we've hit the surface
+      // Serial.print(" 250-1  ");
+      return 250; 
+      
+    } else if (xyz.z - sur < 100) {
+      // Serial.print(" 250-2  ");
+
+      return 250;
+    } else if (xyz.z - sur < 300){
+      // Serial.print(" 120-4  ");
+
+      return THRESHOLD;
+      // return 120;
+    } else {
+      // Serial.print(" 40-4  ");
+      return 40;
+    }
+    // return (sur - xyz.z)*(sur - xyz.z);
+
+    // return 0;
+
+  }
+
+
+  int above_threshold(int fr, int threshold)
+  {
+      // if (fr > threshold * 1.1)
+      if (fr > threshold + 20) {
+          return 1;
+      }
+      return 0;
+  }
+
+  int below_threshold(int fr, int threshold)
+  {
+    // if (fr < 0.8* threshold)
+    if (fr < threshold - 20) {
+          return 1;
+    }
+    return 0;
+  }
+
+  int not_threshold_range(int fr, int threshold)
+  {
+      if (above_threshold(fr, threshold)) {
+          return 1;
+      }
+      if (below_threshold(fr, threshold)) {
+          return 1;
+      }
+
+      return 0;
+  }
+
+
   void GetFreq()
   {
       freqs->PrintCurrentFreq(); 
@@ -674,113 +679,113 @@ public:
       return xyz; 
   }
 
-  void scan1(uint16_t steps)
-  {
-      XYZ_t xyz;
-      int THRESHOLD1 = 100;
+  // void scan1(uint16_t steps)
+  // {
+  //     XYZ_t xyz;
+  //     int THRESHOLD1 = 100;
 
-      for (int i = 0 ; i < 6 ; i++) {
+  //     for (int i = 0 ; i < 6 ; i++) {
 
-          bool flag = true;
-          while (flag) {
-            // land 
-            xyz = eland(steps, THRESHOLD1);
+  //         bool flag = true;
+  //         while (flag) {
+  //           // land 
+  //           xyz = eland(steps, THRESHOLD1);
 
-            if (xyz.z == 32000)
-               break;
-
-
-            // check response three times to be sure it's not a noise
-            flag = freqs->GetFreqResponse().result < THRESHOLD1;
-            flag |= freqs->GetFreqResponse().result < THRESHOLD1;
-            flag |= freqs->GetFreqResponse().result < THRESHOLD1;
-          }
-
-          // print current location
-          position->print();
-          Serial.println("Landed >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-      }
-    }
-
-  void scan2(uint16_t steps)
-  {
-      XYZ_t xyz;
-
-      for (int i = 0 ; i < 6 ; i++) {
-
-          bool flag = true;
-          while (flag) {
-            // land 
-            xyz = eland(steps, THRESHOLD);
-
-            if (xyz.z == 32000)
-               break;
+  //           if (xyz.z == 32000)
+  //              break;
 
 
-            // check response three times to be sure it's not a noise
-            flag = freqs->GetFreqResponse().result < THRESHOLD;
-            flag |= freqs->GetFreqResponse().result < THRESHOLD;
-            flag |= freqs->GetFreqResponse().result < THRESHOLD;
-          }
+  //           // check response three times to be sure it's not a noise
+  //           flag = freqs->GetFreqResponse().result < THRESHOLD1;
+  //           flag |= freqs->GetFreqResponse().result < THRESHOLD1;
+  //           flag |= freqs->GetFreqResponse().result < THRESHOLD1;
+  //         }
 
-          // print current location
-          position->print();
-          Serial.println("Landed >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+  //         // print current location
+  //         position->print();
+  //         Serial.println("Landed >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+  //     }
+  //   }
 
-          if (flag = freqs->GetFreqResponse().result < THRESHOLD) {
-              Serial.println(">>>>>> Found nothing breaking ... ");
-              break;
-          }
+  // void scan2(uint16_t steps)
+  // {
+  //     XYZ_t xyz;
 
-          flag = true;
-          while (flag) {
-            // lift 
-            xyz = elift(steps);
+  //     for (int i = 0 ; i < 6 ; i++) {
 
-            if (xyz.z == -32000)
-               break;
+  //         bool flag = true;
+  //         while (flag) {
+  //           // land 
+  //           xyz = eland(steps, THRESHOLD);
 
-
-            // check response three times to be sure it's not a noise
-            flag = freqs->GetFreqResponse().result > THRESHOLD;
-            flag |= freqs->GetFreqResponse().result > THRESHOLD;
-            flag |= freqs->GetFreqResponse().result > THRESHOLD;
-          }
-
-          // print current location
-          Serial.println("Lifted >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-
-      }
-  }
-
-  // Make a scan over X-axis. Assuming 'landed' the tip is in kind of equalibrium going up you touch the sample going down you disconnect
-  void scanX2(uint16_t steps)
-  {
-      XYZ_t xyz;
+  //           if (xyz.z == 32000)
+  //              break;
 
 
-      // Serial.println("Scanning X: ");
-      delay(1000UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+  //           // check response three times to be sure it's not a noise
+  //           flag = freqs->GetFreqResponse().result < THRESHOLD;
+  //           flag |= freqs->GetFreqResponse().result < THRESHOLD;
+  //           flag |= freqs->GetFreqResponse().result < THRESHOLD;
+  //         }
 
-      xyz = position->move(-steps*10, 0 , 0);
+  //         // print current location
+  //         position->print();
+  //         Serial.println("Landed >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
-      for (int i = 0 ; i < 10 ; i++) {
+  //         if (flag = freqs->GetFreqResponse().result < THRESHOLD) {
+  //             Serial.println(">>>>>> Found nothing breaking ... ");
+  //             break;
+  //         }
 
-          uint16_t fr = freqs->GetFreqResponse().result ;
+  //         flag = true;
+  //         while (flag) {
+  //           // lift 
+  //           xyz = elift(steps);
+
+  //           if (xyz.z == -32000)
+  //              break;
 
 
-          Serial.print(fr);
-          Serial.print("|");
+  //           // check response three times to be sure it's not a noise
+  //           flag = freqs->GetFreqResponse().result > THRESHOLD;
+  //           flag |= freqs->GetFreqResponse().result > THRESHOLD;
+  //           flag |= freqs->GetFreqResponse().result > THRESHOLD;
+  //         }
+
+  //         // print current location
+  //         Serial.println("Lifted >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+
+  //     }
+  // }
+
+  // // Make a scan over X-axis. Assuming 'landed' the tip is in kind of equalibrium going up you touch the sample going down you disconnect
+  // void scanX2(uint16_t steps)
+  // {
+  //     XYZ_t xyz;
+
+
+  //     // Serial.println("Scanning X: ");
+  //     delay(1000UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+
+  //     xyz = position->move(-steps*10, 0 , 0);
+
+  //     for (int i = 0 ; i < 10 ; i++) {
+
+  //         uint16_t fr = freqs->GetFreqResponse().result ;
+
+
+  //         Serial.print(fr);
+  //         Serial.print("|");
 
 
 
-          xyz = position->move(steps, 0 , 0);
+  //         xyz = position->move(steps, 0 , 0);
 
           
-          //RETURN IT: delay(100UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
+  //         //RETURN IT: delay(100UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
-      }
-  }
+  //     }
+  // }
 
 
 
@@ -791,61 +796,64 @@ public:
   {
       XYZ_t xyz;
       int fr;
-      int i = 0 ;
 
-      Serial.print("T1 ");
+      // Serial.print("T1 ");
       // // Serial.println("Scanning X2: ");
 
       // debug = 0 ;
-      // for ( ; i < 100 ; i++) 
+      for (int i =0 ; i < 100 ; i++) 
       {
       
-      //     // uint16_t fr = freqs->GetFreqResponse().result ;
-          // Serial.print("T2 ");
+          // uint16_t fr = freqs->GetFreqResponse().result ;
+          // Serial.println("T2 ");
       
 
       //     // Serial.print(fr);
 
-      //     xyz = position->move(steps, 0 , 0);
+          xyz = position->move(steps, 0 , 0);
 
       //     fr = freqs->GetFreqResponse().result ;
   
-          if (demo_flag)
+          if (demo_flag){
             fr = psaudo_fr(xyz, 99-i);
+          }
              
-          // while (not_threshold_range(fr, THRESHOLD))
+      //     // while (not_threshold_range(fr, THRESHOLD))
+          for (int j = 0 ; j < 100 && not_threshold_range(fr, THRESHOLD); j++)
           {
 
-      //     //   Serial.print(fr);
-      //     //   Serial.print(":T3 ");
+      //       // Serial.print(fr);
+      //       // Serial.print(":T3 ");
+      //       // Serial.print(j);
 
 
             if (fr > THRESHOLD + 20) {
-               Serial.println("above:T4 ");
+              //  Serial.println("above:T4 ");
                 xyz = position->move(0, 0 , 50);
             } else  if (fr < THRESHOLD - 40){
-               Serial.println("below:T4 ");
+              //  Serial.println("below:T4 ");
 
               xyz = position->move(0, 0 , -50);
             }
 
-      //     //   // if (above_threshold(fr, THRESHOLD)){
-      //     //   //     // Serial.println("above:T4 ");
-      //     //   //     xyz = position->move(0, 0 , 50);
-      //     //   // } else if (below_threshold(fr, THRESHOLD)){
-      //     //   //     // Serial.println("below:T4 ");
+      // //     //   // if (above_threshold(fr, THRESHOLD)){
+      // //     //   //     // Serial.println("above:T4 ");
+      // //     //   //     xyz = position->move(0, 0 , 50);
+      // //     //   // } else if (below_threshold(fr, THRESHOLD)){
+      // //     //   //     // Serial.println("below:T4 ");
 
-      //     //   //     xyz = position->move(0, 0 , -50);
-      //     //   // }
+      // //     //   //     xyz = position->move(0, 0 , -50);
+      // //     //   // }
 
  
  
-      //     //   fr = freqs->GetFreqResponse().result ;
+      // //     //   fr = freqs->GetFreqResponse().result ;
   
-            if (demo_flag)
+            if (demo_flag){
               fr = psaudo_fr(xyz, 99-i);
+            }
               
-      //     //   // Here should be the code that dynamically change position to 
+      // //     //   // Here should be the code that dynamically change position to 
           }
 
       //     // Serial.print(fr);
@@ -883,26 +891,29 @@ public:
 
           int fr = freqs->GetFreqResponse().result ;
 
-          if (demo_flag)
+          if (demo_flag) {
             fr = psaudo_fr(xyz, i);
+          }
              
-          while (not_threshold_range(fr, THRESHOLD))
-          {
+          // while (not_threshold_range(fr, THRESHOLD))
+          // {
 
-            if (above_threshold(fr, THRESHOLD))
-                xyz = position->move(0, 0 , 50);
-            else if (below_threshold(fr, THRESHOLD))
-                xyz = position->move(0, 0 , -50);
+          //   if (above_threshold(fr, THRESHOLD)) {
+          //       xyz = position->move(0, 0 , 50);
+          //   } else if (below_threshold(fr, THRESHOLD)) {
+          //       xyz = position->move(0, 0 , -50);
+          //   }
 
  
 
-            fr = freqs->GetFreqResponse().result ;
+          //   fr = freqs->GetFreqResponse().result ;
   
-            if (demo_flag)
+            if (demo_flag){
               fr = psaudo_fr(xyz, i);
+            }
               
-            // Here should be the code that dynamically change position to 
-          }
+          //   // Here should be the code that dynamically change position to 
+          // }
 
           // Serial.print(fr);
           Serial.print(xyz.z);
@@ -1100,14 +1111,14 @@ void loop()
     else if (cmd == "fr") 
     {
       // scanner->GetFreqResponse();
-      // if (!demo_flag){
+      if (!demo_flag){
         scanner->GetFreqResponse();
-      // }else {
+      }else {
 
-      //   int fr = psaudo_fr(scanner->GetPosition(), 0 );
-      //   Serial.print("FR: ");
-      //   Serial.println(fr);
-      // }
+        int fr = scanner->psaudo_fr(scanner->GetPosition(), 0 );
+        Serial.print("FR: ");
+        Serial.println(fr);
+      }
 
     }
 
@@ -1181,29 +1192,30 @@ void loop()
 
     else if (CheckSingleParameter(cmd, "scanxlr", idx, boolean, "scan failed"))
     {
-      Serial.print("Start to scan left to right ");
+      Serial.print("Start to scan left to right  with setps of ");
       Serial.println(idx);
 
 
-    //   scanner->scanXlr(idx);
+      scanner->scanXlr(idx);
 
       Serial.println("DONE!");
+      scanner->printPos();
 
 
     }
 
-   else if (CheckSingleParameter(cmd, "scanxrl", idx, boolean, "scan failed"))
-    {
-      Serial.print("Start to scan right to left with steps of ");
-      Serial.println(idx);
+  //  else if (CheckSingleParameter(cmd, "scanxrl", idx, boolean, "scan failed"))
+  //   {
+  //     Serial.print("Start to scan right to left with steps of ");
+  //     Serial.println(idx);
 
 
-      scanner->scanXrl(idx);
+  //     scanner->scanXrl(idx);
 
-      Serial.println("DONE!");
+  //     Serial.println("DONE!");
 
 
-    } // Good so far
+  //   } // Good so far
   
 
     else if (CheckSingleParameter(cmd, "md", idx, boolean, "down failed"))
