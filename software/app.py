@@ -43,7 +43,7 @@ class MyThread(threading.Thread):
         print(f"Connecting to {port}")
 
         self.ser = serial.Serial(port, 9600, timeout=4)  # Replace '/dev/ttyUSB0' with your port
-        # time.sleep(2)
+        time.sleep(2)
         #print(f"Serial port connected {dir(ser)}")
 
          
@@ -589,7 +589,7 @@ intensity = np.array(z).reshape(100, 100)
 intensity[10][10] = 34
 intensity[30][20] = 134
 
-pp = plt.pcolormesh(x, y, intensity, vmin=0, vmax = 270)
+pp = plt.pcolormesh(x, y, intensity, vmin=0, vmax = 2000)
 plt.colorbar()  # need a colorbar to show the intensity scale
 
 
