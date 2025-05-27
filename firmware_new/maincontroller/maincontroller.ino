@@ -1,4 +1,3 @@
-#include "RTx.h"
 #include "DAC_AD5696.h"
 #include <MD_AD9833.h>
 #include <SPI.h>
@@ -60,7 +59,6 @@ struct XYZ_t
     int z; 
 };
 
-RTx* rtx = new RTx();
 
 class MicroPosition
 {
@@ -980,19 +978,68 @@ void setup()
  
 }
 
+// TODO:: Change API signature most of it we don't need
+bool CheckSingleParameter(char cmd[32], char name[32])
+{
+  if (strcmp(cmd,name)==0) 
+    return true;
+  return false;
+}
+
+int i = 0 ;
+char string[32];
+
 void loop()
 {
 
-  String cmd = rtx->listen();
-	delay(100); // OTHER WISE LISTEN FAILS
-	long idx;
-	bool boolean;
+  // char byteRead;
+  int idx;
+
+
+  int availableBytes = Serial.available();
+
+  if (availableBytes == 0)
+    return; 
+
+  int j = 0 ;
+  while(j<availableBytes)
+  {
+      string[i] = Serial.read();
+      i++;
+      j++;
+  }
+
+
+  // wait until you get full command
+  if ( string[i-1] != ';')
+      return;
+
+  // make command null-terminated
+  string[i] = '\0';
+
+  // just for debug show the command
+  // if (debug)
+  Serial.println(string);
+
+
+  // extract command from string
+  char cmd[32];
+  memcpy(cmd, string, 32);
+  for(int k = 0;k<32;k++)
+    if (cmd[k] == ' ')
+      cmd[k] = 0;   
+
+  if (strlen(cmd) < i) {
+      int param = atoi(string + strlen(cmd));
+      idx = param;
+      // Serial.println(param);
+  }
+
 
   // Just a silly check to see if Arduino has a pulse
 	if (cmd == "health")
 	{
     Serial.println("Main controller is good!");
-		// scanner->start();
 	}
 
   else if (cmd == "demo")
@@ -1012,7 +1059,7 @@ void loop()
     Serial.println("Reseting postion");
     scanner->reset();
 	}
-	else if (CheckSingleParameter(cmd, "d", idx, boolean, "down failed"))
+	else if (CheckSingleParameter(cmd, "d"))
 	{
 		Serial.print("Going down by  ");
 		Serial.print(idx);
@@ -1025,7 +1072,7 @@ void loop()
 
 	}
   
-  else if (CheckSingleParameter(cmd, "u", idx, boolean, "up failed"))
+  else if (CheckSingleParameter(cmd, "u"))
 	{
 		Serial.print("Going up by  ");
 		Serial.print(idx);
@@ -1038,7 +1085,7 @@ void loop()
 
 	}
 
-  else if (CheckSingleParameter(cmd, "x", idx, boolean, "move left"))
+  else if (CheckSingleParameter(cmd, "x"))
 	{
 		Serial.print("Going left by  ");
 		Serial.print(idx);
@@ -1046,14 +1093,14 @@ void loop()
     scanner->x(idx);
 	}
 
-  else if (CheckSingleParameter(cmd, "y", idx, boolean, "move left"))
+  else if (CheckSingleParameter(cmd, "y"))
 	{
 		Serial.print("Y update by  ");
 		Serial.print(idx);
     Serial.println("  steps");
     scanner->y(idx);
 	}
-  // else if (CheckSingleParameter(cmd, "s", idx, boolean, "swing failed"))
+  // else if (CheckSingleParameter(cmd, "s"))
 	// {
 	// 	Serial.print("Start to swing up/down by  ");
 	// 	Serial.print(idx);
@@ -1064,14 +1111,14 @@ void loop()
 
 
 //////////////  Freq. sensor functions ////////////////////////////////////
-   else if (CheckSingleParameter(cmd, "bf", idx, boolean, "base freq failed"))
+   else if (CheckSingleParameter(cmd, "bf"))
 	{
 		Serial.print("Setting BASE_FREQ to  ");
 		Serial.println(idx);
     scanner->setBaseFreq(idx);
 	}
 
-  else if (CheckSingleParameter(cmd, "ph", idx, boolean, "phase failed"))
+  else if (CheckSingleParameter(cmd, "ph"))
 	{
 		Serial.print("Setting PHASE to  ");
 		Serial.print(idx);
@@ -1083,7 +1130,7 @@ void loop()
     // {
     //   scanner->GetFreqRange();
     // }
-    else if (CheckSingleParameter(cmd, "range", idx, boolean, "range failed"))
+    else if (CheckSingleParameter(cmd, "range"))
     {
       Serial.print("Setting RABGE to  ");
 		  Serial.print(idx);
@@ -1140,7 +1187,7 @@ void loop()
 
     }
 
-    else if (CheckSingleParameter(cmd, "thr", idx, boolean, ""))
+    else if (CheckSingleParameter(cmd, "thr"))
     {
       THRESHOLD = idx;
       Serial.print("Setting THRESOLD to ");
@@ -1153,7 +1200,7 @@ void loop()
     // start going down by X steps each time check if frequency has changed
     // if freq. changed stop.
 
-    else if (CheckSingleParameter(cmd, "land", idx, boolean, "land failed"))
+    else if (CheckSingleParameter(cmd, "land"))
     {
       Serial.print("Start to softly land with steps of ");
       Serial.println(idx);
@@ -1161,7 +1208,7 @@ void loop()
 
     } // E234 - Good so far
 
-    else if (CheckSingleParameter(cmd, "lands", idx, boolean, "land failed"))
+    else if (CheckSingleParameter(cmd, "lands"))
     {
       Serial.print("Start to softly land with steps of (delay of 1s)");
       Serial.println(idx);
@@ -1169,7 +1216,7 @@ void loop()
 
     }
 
-      else if (CheckSingleParameter(cmd, "lift", idx, boolean, "land failed"))
+      else if (CheckSingleParameter(cmd, "lift"))
     {
       Serial.print("Start to lift with steps of ");
       Serial.println(idx);
@@ -1177,7 +1224,7 @@ void loop()
 
     }
 
-    else if (CheckSingleParameter(cmd, "lifts", idx, boolean, "land failed"))
+    else if (CheckSingleParameter(cmd, "lifts"))
     {
       delay(1000);
       Serial.print("Start to lifts with steps of ");
@@ -1187,7 +1234,7 @@ void loop()
     }
 
 
-    // else if (CheckSingleParameter(cmd, "scan1", idx, boolean, "scan1 failed"))
+    // else if (CheckSingleParameter(cmd, "scan1"))
     // {
     //   Serial.print("Start to scan1 with steps of ");
     //   Serial.println(idx);
@@ -1197,7 +1244,7 @@ void loop()
 
     // }
 
-    // else if (CheckSingleParameter(cmd, "scan2", idx, boolean, "scan failed"))
+    // else if (CheckSingleParameter(cmd, "scan2"))
     // {
     //   Serial.print("Start to scan with steps of ");
     //   Serial.println(idx);
@@ -1208,7 +1255,7 @@ void loop()
     // }
 
 
-    else if (CheckSingleParameter(cmd, "scanxlr", idx, boolean, "scan failed"))
+    else if (CheckSingleParameter(cmd, "scanxlr"))
     {
       Serial.print("Start to scan left to right  with setps of ");
       Serial.println(idx);
@@ -1216,13 +1263,13 @@ void loop()
       idx = 10;
       scanner->scanXlr(idx);
 
-      Serial.println("  DONE!");
+      Serial.println("DONE!");
       // scanner->printPos();
 
 
     }
 
-   else if (CheckSingleParameter(cmd, "scanxrl", idx, boolean, "scan failed"))
+   else if (CheckSingleParameter(cmd, "scanxrl"))
     {
       Serial.print("Start to scan right to left with steps of ");
       Serial.println(idx);
@@ -1237,7 +1284,7 @@ void loop()
     } // Good so far
   
 
-    else if (CheckSingleParameter(cmd, "md", idx, boolean, "down failed"))
+    else if (CheckSingleParameter(cmd, "md"))
     {
       Serial.print("Going MICRO down by  ");
       Serial.print(idx);
@@ -1245,7 +1292,7 @@ void loop()
       scanner->MPDown(idx);
 
     }
-    else if (CheckSingleParameter(cmd, "mu", idx, boolean, "down failed"))
+    else if (CheckSingleParameter(cmd, "mu"))
     {
       Serial.print("Going MICRO up by  ");
       Serial.print(idx);
@@ -1253,7 +1300,7 @@ void loop()
       scanner->MPUp(idx);
     }
 
-    else if (CheckSingleParameter(cmd, "ml", idx, boolean, "down failed"))
+    else if (CheckSingleParameter(cmd, "ml"))
     {
       Serial.print("Going MICRO LAND by  ");
       Serial.print(idx);
@@ -1278,7 +1325,7 @@ void loop()
     }  
     
 
-    else if (CheckSingleParameter(cmd, "ring", idx, boolean, "ring failed"))
+    else if (CheckSingleParameter(cmd, "ring"))
     {
       Serial.print("Ringing channel ");
       Serial.println(idx);
@@ -1289,7 +1336,7 @@ void loop()
     }
 
 
-    // else if (CheckSingleParameter(cmd, "scanx2", idx, boolean, "scan failed"))
+    // else if (CheckSingleParameter(cmd, "scanx2"))
     // {
     //   Serial.print("Start to scan with steps of ");
     //   Serial.println(idx);
@@ -1298,6 +1345,10 @@ void loop()
     //   scanner->scanX2(idx);
 
     // }
+
+    // DON'T ERASE THIS OTHERWISE SERIAL WILL NOT WORK
+    i = 0 ;
+
 
 
 }

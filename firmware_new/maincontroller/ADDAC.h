@@ -1,5 +1,4 @@
 // ADDAC.h
-#include "stdafx.h"
 
 #include <Wire.h>
 
