@@ -64,13 +64,13 @@ class MyThread(threading.Thread):
 
 
     def real_serial_command(self, cmd):
-        self.ser.write(cmd.encode('utf-8'))
+        self.ser.write((cmd+";").encode('utf-8'))
         data = self.ser.readline().decode('utf-8').strip()
         print(f"Response: {data}")
 
     def real_serial_command_with_done(self, cmd):
 
-        self.ser.write(cmd.encode('utf-8'))
+        self.ser.write((cmd+";").encode('utf-8'))
        
         output = ""
         data = self.ser.readline().decode('utf-8').strip()
