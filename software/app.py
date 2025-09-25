@@ -59,7 +59,7 @@ class MyThread(threading.Thread):
         self.ser.readline().decode('utf-8').strip()
 
 
-        serial_command("demo")
+        # serial_command("demo")
 
 
 
@@ -305,12 +305,12 @@ FreqRangeSubPanel.pack()
 
 def fr_range():
     print("sending range")
-    serial_command("range " +str(user_freq_val.get()) )
-    data = ser.readline().decode('utf-8').strip()
+    data = serial_command_with_done("range " +str(user_freq_val.get()) )
+    # data = ser.readline().decode('utf-8').strip()
 
-    while(data and not data.startswith("Min Valu")):
-        print(f"Resp: {data}")
-        data = ser.readline().decode('utf-8').strip()
+    # while(data and not data.startswith("Min Valu")):
+    #     print(f"Resp: {data}")
+    #     data = ser.readline().decode('utf-8').strip()
 
     print(f"Resp: {data}")
 

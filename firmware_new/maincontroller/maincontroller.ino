@@ -151,18 +151,21 @@ public:
           if (min.result > res.result ) {
             min = res;
           }
+
+          Serial.print("Min Value: ");
+          Serial.print(min.result);
+          Serial.print("   Min freq: ");
+          Serial.println(min.freq);
       }
 
-      Serial.print("Min Value: ");
-      Serial.print(min.result);
-      Serial.print("   Min freq: ");
-      Serial.println(min.freq);
+
     
 
       // return to base freq once finished the tests
       BASE_FREQ = BASE_FREQ_PREV;
       AD.setFrequency(0, BASE_FREQ); 
   }
+
 
 
   // void GetFreqRange(int range)
@@ -273,7 +276,7 @@ public:
         Serial.print(COUNT_NUM-result);
 
         Serial.print("  @ freq: ");
-        Serial.println(BASE_FREQ);
+        Serial.print(BASE_FREQ);
     }
     fres.freq = BASE_FREQ;
     fres.result = result < COUNT_NUM - result ? result: COUNT_NUM - result;
@@ -1135,6 +1138,7 @@ void loop()
       Serial.print("Setting RABGE to  ");
 		  Serial.print(idx);
       scanner->GetFreqRange(idx);
+      Serial.println("DONE!");
     }
       // scan for operation frequency step of 1Hz 
     else if (cmd == "srange")
@@ -1143,7 +1147,7 @@ void loop()
     }
 
          // scan for operation frequency step of 1Hz 
-    else if (cmd == "msrange")
+    else if (CheckSingleParameter(cmd, "msrange"))
     {
       scanner->GetMFreqRange();
     }
