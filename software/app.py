@@ -312,7 +312,7 @@ def fr_range():
     #     print(f"Resp: {data}")
     #     data = ser.readline().decode('utf-8').strip()
 
-    print(f"Resp: {data}")
+    # print(f"Resp: {data}")
 
 finefreq= ttk.Button(FreqRangeSubPanel, text="Range", command=fr_range)
 finefreq.pack()
