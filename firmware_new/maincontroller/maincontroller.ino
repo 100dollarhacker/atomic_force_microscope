@@ -996,7 +996,7 @@ void loop()
 {
 
   // char byteRead;
-  int idx;
+  int32_t idx;
 
 
   int availableBytes = Serial.available();
@@ -1033,7 +1033,7 @@ void loop()
       cmd[k] = 0;   
 
   if (strlen(cmd) < i) {
-      int param = atoi(string + strlen(cmd));
+      int32_t param = atol(string + strlen(cmd));
       idx = param;
       // Serial.println(param);
   }
@@ -1185,6 +1185,8 @@ void loop()
       // scanner->GetFreqResponse();
       if (!demo_flag){
         scanner->GetFreqResponse();
+        Serial.println("");
+
       }else {
 
         int fr = scanner->psaudo_fr(scanner->GetPosition(), 0 );
