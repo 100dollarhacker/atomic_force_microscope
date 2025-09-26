@@ -1022,7 +1022,7 @@ void loop()
 
   // just for debug show the command
   // if (debug)
-  Serial.println(string);
+  // Serial.println(string);
 
 
   // extract command from string
