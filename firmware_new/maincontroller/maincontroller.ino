@@ -984,7 +984,7 @@ void setup()
 // TODO:: Change API signature most of it we don't need
 bool CheckSingleParameter(char cmd[32], char name[32])
 {
-  if (strcmp(cmd,name)==0) 
+  if (!strcmp(cmd,name)) 
     return true;
   return false;
 }
@@ -1029,7 +1029,7 @@ void loop()
   char cmd[32];
   memcpy(cmd, string, 32);
   for(int k = 0;k<32;k++)
-    if (cmd[k] == ' ')
+    if (cmd[k] == ' ' || cmd[k] == ';')
       cmd[k] = 0;   
 
   if (strlen(cmd) < i) {
@@ -1038,26 +1038,29 @@ void loop()
       // Serial.println(param);
   }
 
+  // Serial.print("The cmd:");
+  // Serial.print(cmd);
+  // Serial.println("|");
 
   // Just a silly check to see if Arduino has a pulse
-	if (cmd == "health")
+	if (!strcmp(cmd, "health"))
 	{
     Serial.println("Main controller is good!");
 	}
 
-  else if (cmd == "demo")
+  else if (!strcmp(cmd, "demo"))
   {
     demo_flag = 1 ;
   }
 
   ///////////// Position controller functions ///////////////////////////////////////////
-  else if (cmd == "pp")
+  else if (!strcmp(cmd, "pp"))
   {
     scanner->printPos();
   }
 
 
-	else if (cmd == "reset")
+	else if (!strcmp(cmd, "reset"))
 	{
     Serial.println("Reseting postion");
     scanner->reset();
@@ -1129,7 +1132,7 @@ void loop()
 	}
     
     // scan for operation frequency step of 1-2Hz
-    // else if (cmd == "range")
+    // else if (!strcmp(cmd, "range"))
     // {
     //   scanner->GetFreqRange();
     // }
@@ -1141,43 +1144,43 @@ void loop()
       Serial.println("DONE!");
     }
       // scan for operation frequency step of 1Hz 
-    else if (cmd == "srange")
+    else if (!strcmp(cmd, "srange"))
     {
       scanner->GetSFreqRange();
     }
 
-         // scan for operation frequency step of 1Hz 
-    else if (CheckSingleParameter(cmd, "msrange"))
+    // scan for operation frequency step of 0.1Hz 
+    else if (!strcmp(cmd, "msrange"))
     {
       scanner->GetMFreqRange();
     }
 
-    else if (cmd == "fd")
+    else if (!strcmp(cmd, "fd"))
     {
       scanner->GetFreqDown();
     }
 
-    else if (cmd == "fu")
+    else if (!strcmp(cmd, "fu"))
     {
       scanner->GetFreqUp();
     }
 
-     else if (cmd == "fdd")
+     else if (!strcmp(cmd, "fdd"))
     {
       scanner->GetFreqDownTenth();
     }
 
-    else if (cmd == "fuu")
+    else if (!strcmp(cmd, "fuu"))
     {
       scanner->GetFreqUpTenth();
     }
     // Scan for exact frequency steps 0.1Hz
-    else if (cmd == "freq")
+    else if (!strcmp(cmd, "freq"))
     {
       scanner->GetFreq();
     }
     // get frequency response 
-    else if (cmd == "fr") 
+    else if (!strcmp(cmd, "fr") )
     {
       // scanner->GetFreqResponse();
       if (!demo_flag){
