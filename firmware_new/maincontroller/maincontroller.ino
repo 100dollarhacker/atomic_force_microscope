@@ -1138,7 +1138,7 @@ void loop()
     // }
     else if (CheckSingleParameter(cmd, "range"))
     {
-      Serial.print("Setting RABGE to  ");
+      Serial.print("Setting RANGE to  ");
 		  Serial.print(idx);
       scanner->GetFreqRange(idx);
       Serial.println("DONE!");
