@@ -973,7 +973,7 @@ void setup()
  
   	ad5696->Init(16, 1, 1);
    unsigned char i2csetup = ADDAC::Setup(LDAC);
-	  Serial.println(i2csetup == 1 ? "success!" : "failed!");
+	  Serial.println(i2csetup == 1 ? "success! DONE!" : "failed!");
 
  
 	  // turn internal reference off
@@ -1322,10 +1322,34 @@ void loop()
       while(fr.result < THRESHOLD) 
       {
         scanner->MPDown(idx);
+        scanner->reset();
+
         delay(10);
-        fr = scanner->GetFreqResponse();
-        // Serial.print("Frequency response: ");
-        // Serial.println(fr.result);
+        Serial.print("Going down few mili steps");
+
+
+        // go up 10k steps - Yeah - I know 'down' is actually up, historic reasons
+        // scanner->down(10000);
+
+        const int STEP_SIZE = 1000; //100;
+        scanner->printPos();
+
+        // go down 100 steps each time and check for frequency response
+        // if reached -10k steps get out of this loop
+        for (int i = 0 ; i < 20000 && fr.result < THRESHOLD; i += STEP_SIZE) 
+        {
+            scanner->up(STEP_SIZE);
+            delay(10);
+            Serial.print("Going down 100 nano steps");
+            fr = scanner->GetFreqResponse();
+            scanner->printPos();
+
+        }
+
+
+
+        Serial.print("Frequency response: ");
+        Serial.println(fr.result);
      
 
       }
