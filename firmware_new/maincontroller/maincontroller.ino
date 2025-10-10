@@ -794,21 +794,22 @@ public:
   // Make a scan over X-axis. Assuming 'landed' the tip is in kind of equalibrium going up you touch the sample going down you disconnect
   void scanXlr(uint16_t steps)
   {
-      XYZ_t xyz;
+      XYZ_t xyz, initial_xyz;
       int fr;
 
       // Serial.print("T1 ");
       // // Serial.println("Scanning X2: ");
+      initial_xyz = position->get();      
 
-      // debug = 0 ;
+      debug = 0 ;
       for (int i =0 ; i < 100 ; i++) 
       {
       
-          // uint16_t fr = freqs->GetFreqResponse().result ;
-          // Serial.println("T2 ");
+          uint16_t fr = freqs->GetFreqResponse().result ;
+          if (debug) Serial.println("T2 ");
       
 
-      //     // Serial.print(fr);
+          if (debug) Serial.print(fr);
 
           xyz = position->move(steps, 0 , 0);
 
@@ -822,18 +823,20 @@ public:
           for (int j = 0 ; j < 100 && not_threshold_range(fr, THRESHOLD); j++)
           {
 
-      //       // Serial.print(fr);
-      //       // Serial.print(":T3 ");
-      //       // Serial.print(j);
+            // Serial.print(fr);
+            // Serial.print(":T3 ");
+            // Serial.print(j);
 
 
             if (fr > THRESHOLD + 20) {
-              //  Serial.println("above:T4 ");
-                xyz = position->move(0, 0 , 50);
-            } else  if (fr < THRESHOLD - 40){
-              //  Serial.println("below:T4 ");
+               if (debug) Serial.println("above:T4 ");
+                xyz = position->move(0, 0 , -500);
+                if (debug) position->print();
 
-              xyz = position->move(0, 0 , -50);
+            } else  if (fr < THRESHOLD - 40){
+               if (debug) Serial.println("below:T4 ");
+
+              xyz = position->move(0, 0 , 500);
             }
 
       // //     //   // if (above_threshold(fr, THRESHOLD)){
@@ -847,16 +850,25 @@ public:
 
  
  
-      // //     //   fr = freqs->GetFreqResponse().result ;
+            fr = freqs->GetFreqResponse().result ;
   
             if (demo_flag){
               fr = psaudo_fr(xyz, 99-i);
+            }
+
+            if (abs(initial_xyz.z - xyz.z) > 10000) {
+                Serial.print(initial_xyz.z);
+                Serial.print(" Distance to initial too great stopping  ");
+                Serial.print(xyz.z);
+                Serial.print("  ");
+
+                return;
             }
               
       // //     //   // Here should be the code that dynamically change position to 
           }
 
-      //     // Serial.print(fr);
+          // Serial.print(fr);
           Serial.print(xyz.z);
           Serial.print(",");
 
@@ -868,7 +880,7 @@ public:
       //     //RETURN IT: delay(10UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
       }
-      Serial.println("");
+      // Serial.println("");
       // Serial.println("--");
       // Serial.println("--");
 
@@ -1184,8 +1196,9 @@ void loop()
     {
       // scanner->GetFreqResponse();
       if (!demo_flag){
-        scanner->GetFreqResponse();
-        Serial.println("");
+        freq_resp fr = scanner->GetFreqResponse();
+        Serial.print("FR: ");
+        Serial.println(fr.result);
 
       }else {
 
@@ -1317,7 +1330,7 @@ void loop()
       
       freq_resp fr = scanner->GetFreqResponse();
 
-      // debug = 1 ;
+      debug = 0 ;
 
       while(fr.result < THRESHOLD) 
       {
@@ -1325,14 +1338,14 @@ void loop()
         scanner->reset();
 
         delay(10);
-        Serial.print("Going down few mili steps");
+        // Serial.print("Going down few mili steps");
 
 
         // go up 10k steps - Yeah - I know 'down' is actually up, historic reasons
         // scanner->down(10000);
 
         const int STEP_SIZE = 1000; //100;
-        scanner->printPos();
+        // scanner->printPos();
 
         // go down 100 steps each time and check for frequency response
         // if reached -10k steps get out of this loop
@@ -1340,19 +1353,27 @@ void loop()
         {
             scanner->up(STEP_SIZE);
             delay(10);
-            Serial.print("Going down 100 nano steps");
+            // Serial.print("Going down 100 nano steps");
             fr = scanner->GetFreqResponse();
-            scanner->printPos();
+            // scanner->printPos();
 
         }
 
 
 
-        Serial.print("Frequency response: ");
-        Serial.println(fr.result);
+        // Serial.print("Frequency response: ");
+        // Serial.println(fr.result);
      
 
       }
+
+
+      Serial.print("Frequency response: ");
+      Serial.println(fr.result);
+     
+
+      scanner->printPos();
+
       // debug = 0 ;
       Serial.println("DONE!");
     }  
