@@ -443,7 +443,7 @@ sqroot.grid(row=2, column=2, padx=2, pady=2, sticky="nw")
 def set_nano_steps(value):
     print("Nano steps:", selected_option_nano.get())
 
-options = ["1000", "100", "10", "1"]
+options = ["1", "10", "100", "1000"]
 
 selected_option_nano = tk.StringVar()
 dropdown = ttk.Combobox(NanoPanel, textvariable=selected_option_nano, values=options)
@@ -589,7 +589,7 @@ intensity = np.array(z).reshape(100, 100)
 intensity[10][10] = 34
 intensity[30][20] = 134
 
-pp = plt.pcolormesh(x, y, intensity, vmin=0, vmax = 2000)
+pp = plt.pcolormesh(x, y, intensity, norm="linear")#, vmin=0, vmax = 2000)
 plt.colorbar()  # need a colorbar to show the intensity scale
 
 
