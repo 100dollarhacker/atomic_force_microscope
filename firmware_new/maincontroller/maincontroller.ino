@@ -890,7 +890,7 @@ public:
   {
       XYZ_t xyz, initial_xyz;
 
-      // Serial.println("Scanning X(backwards) : ");
+      Serial.println("Scanning X(backwards) : ");
 
       debug = 0 ;
       initial_xyz = position->get();      
@@ -913,14 +913,18 @@ public:
           for (int j = 0 ; j < 100 && not_threshold_range(fr, THRESHOLD); j++)
           {
 
-               if (fr > THRESHOLD + 20) {
-              //  Serial.println("above:T4 ");
-                xyz = position->relative_move(0, 0 , -500);
-            } else  if (fr < THRESHOLD - 40){
-              //  Serial.println("below:T4 ");
+              if (debug) position->print();
+              if (debug) Serial.print(fr);
+              if (debug) Serial.print(":T3 ");
 
-              xyz = position->relative_move(0, 0 , 500);
-            }
+               if (fr > THRESHOLD + 20) {
+                if (debug) Serial.println("above:T4 ");
+                xyz = position->relative_move(0, 0 , -500);
+              } else  if (fr < THRESHOLD - 40){
+                if (debug) Serial.println("below:T4 ");
+
+                xyz = position->relative_move(0, 0 , 500);
+              }
           // while (not_threshold_range(fr, THRESHOLD))
           // {
 
@@ -939,7 +943,7 @@ public:
                 return;
             }
 
-          //   fr = freqs->GetFreqResponse().result ;
+            fr = freqs->GetFreqResponse().result ;
   
             if (demo_flag){
               fr = psaudo_fr(xyz, i);
