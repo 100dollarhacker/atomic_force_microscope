@@ -361,7 +361,7 @@ public:
   void ring(int channel) {dac->ring(channel);}
 
   // Move x,y,z step relativly to latest position.
-  XYZ_t move(int16_t x, int16_t y, int16_t z)
+  XYZ_t relative_move(int16_t x, int16_t y, int16_t z)
   {
 
     if ((int64_t) x + x_m > 32000 ) {
@@ -445,10 +445,10 @@ public:
   void printPos() {position->print();}
   void reset(){position->reset();}
   void ring(int channel) {position->ring(channel);}
-  void down(uint16_t steps) {position->move(0, 0 , -steps);}
-  void up(uint16_t steps) {position->move( 0 , 0, steps); }//freqs->GetFreq();};
-  void x(uint16_t steps) {position->move( steps , 0, 0); }//freqs->GetFreq();};
-  void y(uint16_t steps) {position->move( 0 , steps, 0); }//freqs->GetFreq();};
+  void down(uint16_t steps) {position->relative_move(0, 0 , -steps);}
+  void up(uint16_t steps) {position->relative_move( 0 , 0, steps); }//freqs->GetFreq();};
+  void x(uint16_t steps) {position->relative_move( steps , 0, 0); }//freqs->GetFreq();};
+  void y(uint16_t steps) {position->relative_move( 0 , steps, 0); }//freqs->GetFreq();};
 
   void MPDown(uint16_t steps) {mp->Down(steps);};
   void MPUp(uint16_t steps) {mp->Up(steps);};
@@ -460,14 +460,14 @@ public:
     {
       for (int j =0  ; j < steps ; j+= steps/100)
       {
-        position->move(0, 0 , (steps)/100);// * steps/100);
+        position->relative_move(0, 0 , (steps)/100);// * steps/100);
         delay(10);
       }
       position->print();
 
       for (int j =0  ; j < 2*steps ; j+= steps/100)
       {
-        position->move(0, 0 , ((int16_t)-1*(steps/100)));// * steps/100);
+        position->relative_move(0, 0 , ((int16_t)-1*(steps/100)));// * steps/100);
         delay(10);
       }
 
@@ -475,7 +475,7 @@ public:
 
       for (int j =0  ; j < steps ; j+= steps/100)
       {
-        position->move(0, 0 , +steps/100 );//* steps/100);
+        position->relative_move(0, 0 , +steps/100 );//* steps/100);
         delay(10);
       }
 
@@ -617,7 +617,7 @@ public:
       for (int i = 0 ; i < 100 & freqs->GetFreqResponse().result < THRESHOLD; i++ )   
       {
           delay(5000UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
-          xyz = position->move(0, 0 , steps);
+          xyz = position->relative_move(0, 0 , steps);
       } 
   }
   void land(uint16_t steps)
@@ -627,7 +627,7 @@ public:
       for (int i = 0 ; i < 100 && freqs->GetFreqResponse().result < THRESHOLD && xyz.z < MAX_Z_VALUE; i++ )   
       {
           delay(1000); // Let piezzoelectric disc respond. Not sure if it too much or not. 
-          xyz = position->move(0, 0 , steps);
+          xyz = position->relative_move(0, 0 , steps);
           Serial.print("Nano position ");
           Serial.println(xyz.z);
       } 
@@ -640,7 +640,7 @@ public:
       XYZ_t xyz = {0,0,0};
       while (freqs->GetFreqResponse().result < threshold & xyz.z < 32000) {
           delay(1000UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
-          xyz = position->move(0, 0 , steps);
+          xyz = position->relative_move(0, 0 , steps);
       } 
 
       return xyz;
@@ -652,7 +652,7 @@ public:
       for (int i = 0 ; i < 300 & freqs->GetFreqResponse().result > THRESHOLD; i++ )   
       {
           delay(5000UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
-          xyz = position->move(0, 0 , -steps);
+          xyz = position->relative_move(0, 0 , -steps);
       } 
   }
 
@@ -662,7 +662,7 @@ public:
       for (int i = 0 ; i < 300 & freqs->GetFreqResponse().result > THRESHOLD; i++ )   
       {
           delay(1000); // Let piezzoelectric disc respond. Not sure if it too much or not. 
-          xyz = position->move(0, 0 , -steps);
+          xyz = position->relative_move(0, 0 , -steps);
       } 
   }
 
@@ -672,7 +672,7 @@ public:
       while(freqs->GetFreqResponse().result > THRESHOLD & xyz.z > -32000)   
       {
           delay(1000UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
-          xyz = position->move(0, 0 , -steps);
+          xyz = position->relative_move(0, 0 , -steps);
 
       } 
 
@@ -767,7 +767,7 @@ public:
   //     // Serial.println("Scanning X: ");
   //     delay(1000UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
 
-  //     xyz = position->move(-steps*10, 0 , 0);
+  //     xyz = position->relative_move(-steps*10, 0 , 0);
 
   //     for (int i = 0 ; i < 10 ; i++) {
 
@@ -779,7 +779,7 @@ public:
 
 
 
-  //         xyz = position->move(steps, 0 , 0);
+  //         xyz = position->relative_move(steps, 0 , 0);
 
           
   //         //RETURN IT: delay(100UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
@@ -811,7 +811,7 @@ public:
 
           if (debug) Serial.print(fr);
 
-          xyz = position->move(steps, 0 , 0);
+          xyz = position->relative_move(steps, 0 , 0);
 
       //     fr = freqs->GetFreqResponse().result ;
   
@@ -830,22 +830,22 @@ public:
 
             if (fr > THRESHOLD + 20) {
                if (debug) Serial.println("above:T4 ");
-                xyz = position->move(0, 0 , -500);
+                xyz = position->relative_move(0, 0 , -500);
                 if (debug) position->print();
 
             } else  if (fr < THRESHOLD - 40){
                if (debug) Serial.println("below:T4 ");
 
-              xyz = position->move(0, 0 , 500);
+              xyz = position->relative_move(0, 0 , 500);
             }
 
       // //     //   // if (above_threshold(fr, THRESHOLD)){
       // //     //   //     // Serial.println("above:T4 ");
-      // //     //   //     xyz = position->move(0, 0 , 50);
+      // //     //   //     xyz = position->relative_move(0, 0 , 50);
       // //     //   // } else if (below_threshold(fr, THRESHOLD)){
       // //     //   //     // Serial.println("below:T4 ");
 
-      // //     //   //     xyz = position->move(0, 0 , -50);
+      // //     //   //     xyz = position->relative_move(0, 0 , -50);
       // //     //   // }
 
  
@@ -874,7 +874,7 @@ public:
 
 
 
-      //     // xyz = position->move(steps, 0 , 0);
+      //     // xyz = position->relative_move(steps, 0 , 0);
 
           
       //     //RETURN IT: delay(10UL); // Let piezzoelectric disc respond. Not sure if it too much or not. 
@@ -888,18 +888,20 @@ public:
 
   void scanXrl(uint16_t steps)
   {
-      XYZ_t xyz;
+      XYZ_t xyz, initial_xyz;
 
       // Serial.println("Scanning X(backwards) : ");
 
       debug = 0 ;
+      initial_xyz = position->get();      
+
 
 
       // go back to where we started just a check if this is noise or not
       for (int i = 0 ; i < 100 ; i++) {
           
           
-          xyz = position->move(-steps, 0 , 0);
+          xyz = position->relative_move(-steps, 0 , 0);
 
           int fr = freqs->GetFreqResponse().result ;
 
@@ -913,22 +915,29 @@ public:
 
                if (fr > THRESHOLD + 20) {
               //  Serial.println("above:T4 ");
-                xyz = position->move(0, 0 , 50);
+                xyz = position->relative_move(0, 0 , -500);
             } else  if (fr < THRESHOLD - 40){
               //  Serial.println("below:T4 ");
 
-              xyz = position->move(0, 0 , -50);
+              xyz = position->relative_move(0, 0 , 500);
             }
           // while (not_threshold_range(fr, THRESHOLD))
           // {
 
           //   if (above_threshold(fr, THRESHOLD)) {
-          //       xyz = position->move(0, 0 , 50);
+          //       xyz = position->relative_move(0, 0 , 50);
           //   } else if (below_threshold(fr, THRESHOLD)) {
-          //       xyz = position->move(0, 0 , -50);
+          //       xyz = position->relative_move(0, 0 , -50);
           //   }
 
- 
+            if (abs(initial_xyz.z - xyz.z) > 10000) {
+                Serial.print(initial_xyz.z);
+                Serial.print(" Distance to initial too great stopping  ");
+                Serial.print(xyz.z);
+                Serial.print("  ");
+
+                return;
+            }
 
           //   fr = freqs->GetFreqResponse().result ;
   
