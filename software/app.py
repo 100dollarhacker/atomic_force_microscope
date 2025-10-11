@@ -482,7 +482,7 @@ def task(shared_bool):
     global pp
     global intensity
 
-    step_size = 100
+    step_size = 10
 
     print("In scan task step_size:" + str(step_size))
 
