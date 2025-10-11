@@ -589,7 +589,7 @@ intensity = np.array(z).reshape(100, 100)
 intensity[10][10] = 34
 intensity[30][20] = 134
 
-pp = plt.pcolormesh(x, y, intensity, norm="linear")#, vmin=0, vmax = 2000)
+pp = plt.pcolormesh(x, y, intensity, cmap='jet', norm="linear")
 plt.colorbar()  # need a colorbar to show the intensity scale
 
 
