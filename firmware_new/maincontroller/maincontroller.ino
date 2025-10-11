@@ -1295,7 +1295,6 @@ void loop()
       Serial.print("Start to scan left to right  with setps of ");
       Serial.println(idx);
 
-      idx = 10;
       scanner->scanXlr(idx);
 
       Serial.println("DONE!");
@@ -1309,7 +1308,6 @@ void loop()
       Serial.print("Start to scan right to left with steps of ");
       Serial.println(idx);
 
-      idx = 10;
       scanner->scanXrl(idx);
 
       Serial.println("DONE!");
