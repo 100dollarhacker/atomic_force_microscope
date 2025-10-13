@@ -19,6 +19,7 @@ import threading
 from threading import Thread, Event
 
 
+
 # for queue of messaging between main program/buttons and serial comm. thread
 import threading
 import queue 
@@ -481,8 +482,9 @@ def task(shared_bool):
     global canvas
     global pp
     global intensity
+    global selected_option_nano
 
-    step_size = 10
+    step_size = selected_option_nano.get()
 
     print("In scan task step_size:" + str(step_size))
 
@@ -498,7 +500,13 @@ def task(shared_bool):
         for i in range(100):
             intensity[2 * j][i] = my_list[i]
 
+
+        min_val = np.min(intensity)
+        max_val = np.max(intensity)
+
+        pp = plt.pcolormesh(x, y, intensity, cmap = 'jet', vmin=min_val, vmax = max_val)
         pp.set_array(intensity)
+        pp.set_clim(min_val, max_val)
         canvas.draw()
 
         serial_command("y "+str(step_size))
@@ -510,7 +518,14 @@ def task(shared_bool):
         for i in range(100):
             intensity[2*j+1][i] = my_list[100-i-1]
 
+
+        min_val = np.min(intensity)
+        max_val = np.max(intensity)
+
+        pp = plt.pcolormesh(x, y, intensity, cmap = 'jet', vmin=min_val, vmax = max_val)
         pp.set_array(intensity)
+        pp.set_clim(min_val, max_val)
+
         canvas.draw()
 
         serial_command("y "+str(step_size))
@@ -524,7 +539,7 @@ def start_scan():
     shared_bool.set()
     print(f"Starting scan...")
 
-    thread1 = threading.Thread(target=task, args=(shared_bool,))
+    thread1 = threading.Thread(target=task, args=(shared_bool))
     thread1.start()
     print("main scan ended....")
 
@@ -586,8 +601,8 @@ y = range(1,101) #[0.55,0.65,0.75,0.85,0.95]
 x, y = np.meshgrid(x, y)
 z=[0]*10000
 intensity = np.array(z).reshape(100, 100)
-intensity[10][10] = 34
-intensity[30][20] = 134
+# intensity[10][10] = 34
+# intensity[30][20] = 134
 
 pp = plt.pcolormesh(x, y, intensity, cmap='jet', norm="linear")
 plt.colorbar()  # need a colorbar to show the intensity scale

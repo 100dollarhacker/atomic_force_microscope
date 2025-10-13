@@ -864,6 +864,11 @@ public:
 
                 return;
             }
+
+            if (xyz.z == 32000) {
+                Serial.print(" Z reached it's maximum, stopping ");
+                return;
+            }
               
       // //     //   // Here should be the code that dynamically change position to 
           }
@@ -940,6 +945,11 @@ public:
                 Serial.print(xyz.z);
                 Serial.print("  ");
 
+                return;
+            }
+
+            if (xyz.z == 32000) {
+                Serial.print(" Z reached it's maximum, stopping ");
                 return;
             }
 
