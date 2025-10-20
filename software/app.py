@@ -539,7 +539,7 @@ def start_scan():
     shared_bool.set()
     print(f"Starting scan...")
 
-    thread1 = threading.Thread(target=task, args=(shared_bool))
+    thread1 = threading.Thread(target=task, args=(shared_bool,))
     thread1.start()
     print("main scan ended....")
 
