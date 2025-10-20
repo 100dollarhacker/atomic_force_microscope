@@ -804,6 +804,8 @@ public:
       debug = 0 ;
       for (int i =0 ; i < 100 ; i++) 
       {
+          delay(500); // Stabilize reading before moving X
+
       
           uint16_t fr = freqs->GetFreqResponse().result ;
           if (debug) Serial.println("T2 ");
@@ -856,19 +858,22 @@ public:
               fr = psaudo_fr(xyz, 99-i);
             }
 
-            if (abs(initial_xyz.z - xyz.z) > 10000) {
-                Serial.print(initial_xyz.z);
-                Serial.print(" Distance to initial too great stopping  ");
-                Serial.print(xyz.z);
-                Serial.print("  ");
+            // if (abs(initial_xyz.z - xyz.z) > 10000) {
+            //     Serial.print(initial_xyz.z);
+            //     Serial.print(" Distance to initial too great stopping  ");
+            //     Serial.print(xyz.z);
+            //     Serial.print("  ");
 
-                return;
-            }
+            //     return;
+            // }
 
-            if (xyz.z == 32000) {
+            if (xyz.z == -32000) {
                 Serial.print(" Z reached it's maximum, stopping ");
                 return;
             }
+
+            if (xyz.z == 32000) 
+              break; // We came to the lowest point no point to continue - but it's ok to continue, we just should wait until the end of the hole.
               
       // //     //   // Here should be the code that dynamically change position to 
           }
@@ -905,7 +910,7 @@ public:
       // go back to where we started just a check if this is noise or not
       for (int i = 0 ; i < 100 ; i++) {
           
-          
+          delay(500); // Stabilize reading before moving X
           xyz = position->relative_move(-steps, 0 , 0);
 
           int fr = freqs->GetFreqResponse().result ;
@@ -939,25 +944,31 @@ public:
           //       xyz = position->relative_move(0, 0 , -50);
           //   }
 
-            if (abs(initial_xyz.z - xyz.z) > 10000) {
-                Serial.print(initial_xyz.z);
-                Serial.print(" Distance to initial too great stopping  ");
-                Serial.print(xyz.z);
-                Serial.print("  ");
+            // if (abs(initial_xyz.z - xyz.z) > 10000) {
+            //     Serial.print(initial_xyz.z);
+            //     Serial.print(" Distance to initial too great stopping  ");
+            //     Serial.print(xyz.z);
+            //     Serial.print("  ");
 
-                return;
-            }
+            //     return;
+            // }
 
-            if (xyz.z == 32000) {
-                Serial.print(" Z reached it's maximum, stopping ");
-                return;
-            }
+
 
             fr = freqs->GetFreqResponse().result ;
   
             if (demo_flag){
               fr = psaudo_fr(xyz, i);
             }
+
+            if (xyz.z == -32000) {
+                Serial.print(" Z reached it's maximum, stopping ");
+                return;
+            }
+
+            if (xyz.z == 32000) 
+              break; // We came to the lowest point no point to continue - but it's ok to continue, we just should wait until the end of the hole.
+
           }
               
           //   // Here should be the code that dynamically change position to 
