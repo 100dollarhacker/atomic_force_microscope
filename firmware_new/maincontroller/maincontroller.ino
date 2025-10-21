@@ -366,7 +366,7 @@ public:
 
     if ((int64_t) x + x_m > 32000 ) {
       x_m = 32000;
-      Serial.println("X was restricted to 32000");
+      // Serial.println("X was restricted to 32000");
     } else if ((int64_t) x + x_m < -32000 ) {
       Serial.println("X was restricted to -32000");
       x_m = -32000;
@@ -377,7 +377,7 @@ public:
 
     if ((int64_t) y + y_m > 32000 ) {
       y_m = 32000;
-      Serial.println("Y was restricted to 32000");
+      // Serial.println("Y was restricted to 32000");
     } else if ((int64_t) y + y_m < -32000 ) {
       Serial.println("Y was restricted to -32000");
       y_m = -32000;
@@ -388,7 +388,7 @@ public:
 
     if ((int64_t) z + z_m > 32000 ) {
       z_m = 32000;
-      Serial.println("Z was restricted to 32000");
+      // Serial.println("Z was restricted to 32000");
     } else if ((int64_t) z + z_m < -32000 ) {
       Serial.println("Z was restricted to -32000");
       z_m = -32000;
@@ -879,7 +879,7 @@ public:
           }
 
           // Serial.print(fr);
-          Serial.print(xyz.z);
+          Serial.print(-xyz.z);
           Serial.print(",");
 
 
@@ -975,7 +975,7 @@ public:
           // }
 
           // Serial.print(fr);
-          Serial.print(xyz.z);
+          Serial.print(-xyz.z);
 
 
           // int fr = freqs->GetFreqResponse().result ;
