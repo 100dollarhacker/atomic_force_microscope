@@ -501,10 +501,10 @@ def task(shared_bool):
             intensity[2 * j][i] = my_list[i]
 
 
-        min_val = np.min(intensity)
-        max_val = np.max(intensity)
+        # min_val = -32000#np.min(intensity)
+        # max_val = 32000#np.max(intensity)
 
-        pp = plt.pcolormesh(x, y, intensity, cmap = 'jet', vmin=min_val, vmax = max_val)
+        pp = plt.pcolormesh(x, y, intensity, cmap = 'jet')#, vmin=min_val, vmax = max_val)
         pp.set_array(intensity)
         pp.set_clim(min_val, max_val)
         canvas.draw()
@@ -516,13 +516,13 @@ def task(shared_bool):
         my_list = output.split(",")
 
         for i in range(100):
-            intensity[2*j+1][i] = my_list[100-i-1]
+            intensity[2*j+1][i] = my_list[i]#[100-i-1] <-- This might be THE bug, but I don't know why...
 
 
-        min_val = np.min(intensity)
-        max_val = np.max(intensity)
+        # min_val = -32000#np.min(intensity)
+        # max_val = 32000#np.max(intensity)
 
-        pp = plt.pcolormesh(x, y, intensity, cmap = 'jet', vmin=min_val, vmax = max_val)
+        pp = plt.pcolormesh(x, y, intensity, cmap = 'jet')#, vmin=min_val, vmax = max_val)
         pp.set_array(intensity)
         pp.set_clim(min_val, max_val)
 
@@ -531,7 +531,7 @@ def task(shared_bool):
         serial_command("y "+str(step_size))
     
     print("Scan task ended --- ")
-    serial_command("y " +str(100*step_size))
+    serial_command("y -" +str(100*step_size))
 
 
 def start_scan():
@@ -604,7 +604,7 @@ intensity = np.array(z).reshape(100, 100)
 # intensity[10][10] = 34
 # intensity[30][20] = 134
 
-pp = plt.pcolormesh(x, y, intensity, cmap='jet', norm="linear")
+pp = plt.pcolormesh(x, y, intensity, cmap='jet', norm="linear", vmax="32000", vmin="-32000")
 plt.colorbar()  # need a colorbar to show the intensity scale
 
 
@@ -616,3 +616,4 @@ canvas.draw()
 
 
 window.mainloop()
+buffer
