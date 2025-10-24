@@ -516,7 +516,7 @@ def task(shared_bool):
         my_list = output.split(",")
 
         for i in range(100):
-            intensity[2*j+1][i] = my_list[i]#[100-i-1] <-- This might be THE bug, but I don't know why...
+            intensity[2*j+1][i] = my_list[i] 
 
 
         # min_val = -32000#np.min(intensity)
