@@ -81,6 +81,41 @@ public:
 
 };
 
+// PseudDAC we don't have DAC in our system (except nono posotioner) and we don't want to waste time in adding one.
+// The idea is to use signal generator to generate constant value
+class PDAC 
+{
+public:
+  PDAC() {
+    AD.begin();
+    AD.setMode(MD_AD9833::MODE_SINE);
+    AD.setFrequency(0,0);
+    AD.setPhase(0, 0);
+  }
+
+  // The real voltage would be sin(phase) * 0.6 [Volts]
+  void setValue(int phase) {
+    AD.setPhase(0, phase);
+  }
+
+  void internalTest() 
+  {
+
+    int i = 0 ;
+    int val = 0 ;
+    while (true) {
+      delay(100);
+      AD.setPhase(0, i);
+      
+      i += 20;
+      if (i >= 3600) 
+        i = 0 ;
+      val = analogRead(A5);
+      Serial.println(val);
+    }
+  }
+};
+
 class FreqSensor
 {
 public:
@@ -296,6 +331,9 @@ private:
 };
 
 DAC_AD5696* ad5696 = new DAC_AD5696();
+
+
+
 
 class DAC
 {
@@ -1189,11 +1227,30 @@ void loop()
       scanner->GetFreqRange(idx);
       Serial.println("DONE!");
     }
+
+    else if (CheckSingleParameter(cmd, "sv"))
+    {
+      Serial.print("Setting pseudo DAC to  ");
+		  Serial.print(idx);
+      PDAC pdac;
+      pdac.setValue(idx);
+      Serial.println("DONE!");
+    }
+
       // scan for operation frequency step of 1Hz 
     else if (!strcmp(cmd, "srange"))
     {
       scanner->GetSFreqRange();
     }
+
+
+
+    else if (!strcmp(cmd, "pdac")) 
+    {
+      PDAC pdac;
+      pdac.internalTest();
+    }
+
 
     // scan for operation frequency step of 0.1Hz 
     else if (!strcmp(cmd, "msrange"))
