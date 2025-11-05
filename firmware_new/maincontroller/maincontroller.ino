@@ -87,15 +87,22 @@ class PDAC
 {
 public:
   PDAC() {
-    AD.begin();
-    AD.setMode(MD_AD9833::MODE_SINE);
-    AD.setFrequency(0,0);
-    AD.setPhase(0, 0);
+    // AD.begin();
+    // AD.setMode(MD_AD9833::MODE_SINE);
+    // AD.setFrequency(0,0);
+    // AD.setPhase(0, 0);
   }
 
   // The real voltage would be sin(phase) * 0.6 [Volts]
   void setValue(int phase) {
+    AD.setMode(MD_AD9833::MODE_SINE);
+    AD.setFrequency(0,0);
     AD.setPhase(0, phase);
+  }
+
+  int getValue()
+  {
+    return(analogRead(A5));
   }
 
   void internalTest() 
@@ -1125,12 +1132,27 @@ void loop()
   // Serial.print("The cmd:");
   // Serial.print(cmd);
   // Serial.println("|");
+  
 
   // Just a silly check to see if Arduino has a pulse
 	if (!strcmp(cmd, "health"))
 	{
     Serial.println("Main controller is good!");
 	}
+
+  else if (CheckSingleParameter(cmd, "sv"))
+  {
+    Serial.print("Setting pseudo DAC to  ");
+    Serial.print(idx);
+    PDAC pdac;
+    pdac.setValue(idx);
+
+    Serial.print("Getting output   ");
+    Serial.println(pdac.getValue());
+    
+
+    Serial.println(" DONE!");
+  }
 
   else if (!strcmp(cmd, "demo"))
   {
@@ -1228,14 +1250,6 @@ void loop()
       Serial.println("DONE!");
     }
 
-    else if (CheckSingleParameter(cmd, "sv"))
-    {
-      Serial.print("Setting pseudo DAC to  ");
-		  Serial.print(idx);
-      PDAC pdac;
-      pdac.setValue(idx);
-      Serial.println("DONE!");
-    }
 
       // scan for operation frequency step of 1Hz 
     else if (!strcmp(cmd, "srange"))
@@ -1251,6 +1265,13 @@ void loop()
       pdac.internalTest();
     }
 
+    else if (!strcmp(cmd, "getpdac")) 
+    {
+      PDAC pdac;
+      Serial.print("Getting output   ");
+		  Serial.println(pdac.getValue());
+      
+    }
 
     // scan for operation frequency step of 0.1Hz 
     else if (!strcmp(cmd, "msrange"))
