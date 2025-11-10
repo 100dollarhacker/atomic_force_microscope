@@ -900,7 +900,7 @@ public:
           if (mode == modes::AFM)
             fr = freqs->GetFreqResponse().result ;
           else  if  (mode == modes::STM){
-            fr = volts->GetVoltage();
+            fr = GetVoltage();
           }
           if (debug) Serial.println("T2 ");
       
@@ -921,7 +921,7 @@ public:
 
           if (mode == modes::STM) {
               NUM_OF_TRYES = 1000;
-              HOP_SIZE = 50;
+              HOP_SIZE = 10;
           }
 
           for (int j = 0 ; j < NUM_OF_TRYES && not_threshold_range(fr, THRESHOLD); j++)
@@ -956,7 +956,7 @@ public:
             if (mode == modes::AFM)
               fr = freqs->GetFreqResponse().result ;
             else  if  (mode == modes::STM){
-              fr = volts->GetVoltage();
+              fr = GetVoltage();
             }
   
             if (demo_flag){
@@ -1027,7 +1027,7 @@ public:
           if (mode == modes::AFM)
             fr = freqs->GetFreqResponse().result ;
           else  if  (mode == modes::STM){
-            fr = volts->GetVoltage();
+            fr = GetVoltage();
           }
 
           if (demo_flag) {
@@ -1039,7 +1039,7 @@ public:
 
           if (mode == modes::STM) {
               NUM_OF_TRYES = 1000;
-              HOP_SIZE = 50;
+              HOP_SIZE = 10;
           }
           for (int j = 0 ; j < NUM_OF_TRYES && not_threshold_range(fr, THRESHOLD); j++)
           {
@@ -1080,7 +1080,7 @@ public:
             if (mode == modes::AFM)
               fr = freqs->GetFreqResponse().result ;
             else  if  (mode == modes::STM){
-              fr = volts->GetVoltage();
+              fr = GetVoltage();
             }
   
             if (demo_flag){
