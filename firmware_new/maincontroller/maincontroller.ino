@@ -24,7 +24,10 @@ Stepper stepper(stepsPerRevolution, 10, 12, 11, 13 );
 
 MD_AD9833	AD(DATA, CLK, FSYNC); // Arbitrary SPI pins
 
+//TODO: Add those to configuration struct
 int debug = 1;
+enum modes {AFM, STM};
+int mode = modes::STM;
 
 int pincontact = 8;
 int pincontact5v = 9;
@@ -102,7 +105,7 @@ public:
 
   int getValue()
   {
-    return(analogRead(A5));
+    return(analogRead(A3));
   }
 
   void internalTest() 
@@ -117,10 +120,32 @@ public:
       i += 20;
       if (i >= 3600) 
         i = 0 ;
-      val = analogRead(A5);
+      val = analogRead(A3);
       Serial.println(val);
     }
   }
+};
+
+class VoltageSensor
+{
+public:
+  VoltageSensor() : pdac()
+  {
+
+  }
+
+  int16_t GetVoltage() {
+    // pdac.setValue(idx);
+    int output = pdac.getValue();
+    // Serial.print("Getting output   ");
+    // Serial.println(output);
+    return output;
+  }
+    
+
+private:
+  PDAC pdac;
+
 };
 
 class FreqSensor
@@ -485,7 +510,7 @@ private:
 class Scanner
 {
 public:
-  Scanner(){position = new Position(); freqs = new FreqSensor(); mp = new MicroPosition();};
+  Scanner(){position = new Position(); volts = new VoltageSensor(); freqs = new FreqSensor(); mp = new MicroPosition();};
   XYZ_t GetPosition() {return(position->get());}
   void printPos() {position->print();}
   void reset(){position->reset();}
@@ -603,6 +628,22 @@ public:
   void GetFreq()
   {
       freqs->PrintCurrentFreq(); 
+  } 
+
+  int16_t GetVoltage() 
+  {
+    // int16_t voltage = volts->GetVoltage();
+    int32_t voltage = 0;
+    const int AVG_STEPS = 10;
+    for (int i = 0 ; i < AVG_STEPS; i++) 
+    {
+        voltage += volts->GetVoltage();
+    }
+
+    // Serial.print("Got volage ");
+    // Serial.println(voltage);
+
+    return voltage/AVG_STEPS;
   }
 
   void setPhase(int phase)
@@ -849,10 +890,18 @@ public:
       debug = 0 ;
       for (int i =0 ; i < 100 ; i++) 
       {
-          delay(500); // Stabilize reading before moving X
+          if (mode == modes::AFM)
+            delay(500); // Stabilize reading before moving X
+          else if (mode == modes::STM) 
+            delay(50);
 
       
-          uint16_t fr = freqs->GetFreqResponse().result ;
+          // uint16_t fr = freqs->GetFreqResponse().result ;
+          if (mode == modes::AFM)
+            fr = freqs->GetFreqResponse().result ;
+          else  if  (mode == modes::STM){
+            fr = volts->GetVoltage();
+          }
           if (debug) Serial.println("T2 ");
       
 
@@ -867,7 +916,15 @@ public:
           }
              
       //     // while (not_threshold_range(fr, THRESHOLD))
-          for (int j = 0 ; j < 100 && not_threshold_range(fr, THRESHOLD); j++)
+          int NUM_OF_TRYES = 100;
+          int HOP_SIZE = 500;
+
+          if (mode == modes::STM) {
+              NUM_OF_TRYES = 1000;
+              HOP_SIZE = 50;
+          }
+
+          for (int j = 0 ; j < NUM_OF_TRYES && not_threshold_range(fr, THRESHOLD); j++)
           {
 
             // Serial.print(fr);
@@ -877,13 +934,13 @@ public:
 
             if (fr > THRESHOLD + 20) {
                if (debug) Serial.println("above:T4 ");
-                xyz = position->relative_move(0, 0 , -500);
+                xyz = position->relative_move(0, 0 , -HOP_SIZE);
                 if (debug) position->print();
 
             } else  if (fr < THRESHOLD - 40){
                if (debug) Serial.println("below:T4 ");
 
-              xyz = position->relative_move(0, 0 , 500);
+              xyz = position->relative_move(0, 0 , HOP_SIZE);
             }
 
       // //     //   // if (above_threshold(fr, THRESHOLD)){
@@ -895,9 +952,12 @@ public:
       // //     //   //     xyz = position->relative_move(0, 0 , -50);
       // //     //   // }
 
- 
- 
-            fr = freqs->GetFreqResponse().result ;
+
+            if (mode == modes::AFM)
+              fr = freqs->GetFreqResponse().result ;
+            else  if  (mode == modes::STM){
+              fr = volts->GetVoltage();
+            }
   
             if (demo_flag){
               fr = psaudo_fr(xyz, 99-i);
@@ -944,28 +1004,44 @@ public:
   void scanXrl(uint16_t steps)
   {
       XYZ_t xyz, initial_xyz;
+      int fr;
 
       Serial.println("Scanning X(backwards) : ");
 
       debug = 0 ;
-      initial_xyz = position->get();      
+      initial_xyz = position->get();    
+
 
 
 
       // go back to where we started just a check if this is noise or not
       for (int i = 0 ; i < 100 ; i++) {
           
-          delay(500); // Stabilize reading before moving X
+          if (mode == modes::AFM)
+            delay(500); // Stabilize reading before moving X
+          else if (mode == modes::STM)
+            delay(50);
+          
           xyz = position->relative_move(-steps, 0 , 0);
 
-          int fr = freqs->GetFreqResponse().result ;
+          if (mode == modes::AFM)
+            fr = freqs->GetFreqResponse().result ;
+          else  if  (mode == modes::STM){
+            fr = volts->GetVoltage();
+          }
 
           if (demo_flag) {
             fr = psaudo_fr(xyz, i);
           }
              
+          int NUM_OF_TRYES = 100;
+          int HOP_SIZE = 500;
 
-          for (int j = 0 ; j < 100 && not_threshold_range(fr, THRESHOLD); j++)
+          if (mode == modes::STM) {
+              NUM_OF_TRYES = 1000;
+              HOP_SIZE = 50;
+          }
+          for (int j = 0 ; j < NUM_OF_TRYES && not_threshold_range(fr, THRESHOLD); j++)
           {
 
               if (debug) position->print();
@@ -974,11 +1050,11 @@ public:
 
                if (fr > THRESHOLD + 20) {
                 if (debug) Serial.println("above:T4 ");
-                xyz = position->relative_move(0, 0 , -500);
+                xyz = position->relative_move(0, 0 , -HOP_SIZE);
               } else  if (fr < THRESHOLD - 40){
                 if (debug) Serial.println("below:T4 ");
 
-                xyz = position->relative_move(0, 0 , 500);
+                xyz = position->relative_move(0, 0 , HOP_SIZE);
               }
           // while (not_threshold_range(fr, THRESHOLD))
           // {
@@ -1000,7 +1076,12 @@ public:
 
 
 
-            fr = freqs->GetFreqResponse().result ;
+            // fr = freqs->GetFreqResponse().result ;
+            if (mode == modes::AFM)
+              fr = freqs->GetFreqResponse().result ;
+            else  if  (mode == modes::STM){
+              fr = volts->GetVoltage();
+            }
   
             if (demo_flag){
               fr = psaudo_fr(xyz, i);
@@ -1047,6 +1128,7 @@ public:
 private:
   Position* position;
   FreqSensor* freqs;
+  VoltageSensor* volts;
   MicroPosition* mp;
 
 };
@@ -1358,6 +1440,20 @@ void loop()
 
     }
 
+    else if (CheckSingleParameter(cmd, "mode")) 
+    {
+      if (idx == 0) {
+        mode = modes::AFM;
+        Serial.println("Mode AFM was set");
+      } else {
+        
+        mode = modes::STM;
+        Serial.println("Mode sTM was set");
+      }
+      
+
+    }
+
     else if (CheckSingleParameter(cmd, "lifts"))
     {
       delay(1000);
@@ -1438,7 +1534,12 @@ void loop()
       Serial.print(idx);
       Serial.println("  steps");
       
-      freq_resp fr = scanner->GetFreqResponse();
+      freq_resp fr ;
+      if (mode == modes::AFM)
+        fr = scanner->GetFreqResponse();
+      else  if  (mode == modes::STM){
+        fr.result = scanner->GetVoltage();
+      }
 
       debug = 0 ;
 
@@ -1464,15 +1565,20 @@ void loop()
             scanner->up(STEP_SIZE);
             delay(10);
             // Serial.print("Going down 100 nano steps");
-            fr = scanner->GetFreqResponse();
+
+            if (mode == modes::AFM)
+              fr = scanner->GetFreqResponse();
+            else  if  (mode == modes::STM ){
+              fr.result = scanner->GetVoltage();
+            }
             // scanner->printPos();
 
         }
 
 
 
-        // Serial.print("Frequency response: ");
-        // Serial.println(fr.result);
+        Serial.print("Frequency response: ");
+        Serial.println(fr.result);
      
 
       }
