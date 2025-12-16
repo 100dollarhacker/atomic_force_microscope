@@ -890,10 +890,10 @@ public:
       debug = 0 ;
       for (int i =0 ; i < 100 ; i++) 
       {
-          if (mode == modes::AFM)
+          // if (mode == modes::AFM)
             delay(500); // Stabilize reading before moving X
-          else if (mode == modes::STM) 
-            delay(50);
+          // else if (mode == modes::STM) 
+          //   delay(50);
 
       
           // uint16_t fr = freqs->GetFreqResponse().result ;
@@ -1017,10 +1017,10 @@ public:
       // go back to where we started just a check if this is noise or not
       for (int i = 0 ; i < 100 ; i++) {
           
-          if (mode == modes::AFM)
+          // if (mode == modes::AFM)
             delay(500); // Stabilize reading before moving X
-          else if (mode == modes::STM)
-            delay(50);
+          // else if (mode == modes::STM)
+          //   delay(50);
           
           xyz = position->relative_move(-steps, 0 , 0);
 
@@ -1555,7 +1555,17 @@ void loop()
         // go up 10k steps - Yeah - I know 'down' is actually up, historic reasons
         // scanner->down(10000);
 
-        const int STEP_SIZE = 1000; //100;
+
+
+
+
+         int STEP_SIZE = 1000; //100;
+        
+
+
+        if (mode == modes::STM)
+          STEP_SIZE = 100;
+
         // scanner->printPos();
 
         // go down 100 steps each time and check for frequency response
@@ -1563,7 +1573,7 @@ void loop()
         for (int i = 0 ; i < 20000 && fr.result < THRESHOLD; i += STEP_SIZE) 
         {
             scanner->up(STEP_SIZE);
-            delay(10);
+            // delay(10);
             // Serial.print("Going down 100 nano steps");
 
             if (mode == modes::AFM)
